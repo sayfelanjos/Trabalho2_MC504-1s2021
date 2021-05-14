@@ -10,6 +10,7 @@ typedef struct args_imigrante {
 	int *num_imigrantes_check_in;
 	int *num_imigrantes_fila;
 	int *juiz_dentro;
+	pthread_mutex_t * lock;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
 	sem_t* imigrantes_fila;

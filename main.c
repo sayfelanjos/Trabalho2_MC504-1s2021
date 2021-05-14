@@ -4,23 +4,15 @@
 #include "rotinas.h"
 #include <stdlib.h>
 
-int juiz_dentro = 0; // 0 se o juiz está fora e 1 caso contrário.
-
 sem_t confirm; //semaforo que indica que o juiz ja confirmou
 
 sem_t juiz_na_sala; // semaforo que indica que o juiz saiu do predio
 
-int num_espectadores = 0; // número de espectadores
-
 sem_t espectadores_fila; // permite a entrada de novos espectadores
-
-int num_imigrantes_fila = 0; // número de imigrantes na fila 
 
 sem_t imigrantes_fila; // permite a entrada de novos imigrantes
 
 sem_t assentar; // permite que somente um imigrante se assente por vez para certificação.
-
-int num_imigrantes_check_in = 0; // número de imigrantes fazendo check-in
 
 sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
 
@@ -35,6 +27,13 @@ sem_t inseri_imigrantes;
 sem_t inseri_imigrantes_fila;
 
 sem_t inseri_imigrantes_check_in;
+
+pthread_mutex_t lock1;
+
+pthread_mutex_t lock2;
+
+pthread_mutex_t lock3;
+
 int main() {
 
 	system("clear");
@@ -55,7 +54,7 @@ int main() {
 
 	sem_init(&imigrantes_fila,0,5); // limita a quantidade de espectadores na fila em 5.
 
-	sem_init(&assentar,0,1);
+	sem_init(&assentar,0,0);
 
 	sem_init(&imigrantes_check_in,0,5); // limita a quantidade de imigrantes fazendo check_in em 5.
 
@@ -63,7 +62,7 @@ int main() {
 
 	sem_init(&altera_tela,0,1); // limita a uma thread por vez a alteração da tela.
 
-	sem_init(&certificado,0,1);
+	sem_init(&certificado,0,0);
 
 
 	//FIM CRIA SEMAFOROS -------------------------------------------------- 	
@@ -89,6 +88,14 @@ int main() {
 	int indice_imigrantes = 0; // índice inicial das threads
 
 	int indice_espectadores = 0; // índice inicial das threads
+
+	int juiz_dentro; // 0 se o juiz está fora e 1 caso contrário.
+
+	int num_espectadores; // número de espectadores
+
+	int num_imigrantes_fila; // número de imigrantes na fila 
+
+	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
 
 			//titulo
 	char* titulo[73]= {                                                                                           
@@ -270,6 +277,7 @@ int main() {
 	pthread_t imigrantes[NUM_IMIGRANTES]; //threads para os imigrantes
 	pthread_t espectadores[NUM_ESPECTADORES]; //threads para os espectadores
 	pthread_t juiz; //thread para o juiz
+	
 	while(1) {
 		juiz_dentro = 0;
 		num_espectadores = 0;
@@ -283,6 +291,7 @@ int main() {
 			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
 			args_imigrantes[i].num_imigrantes_fila = &num_imigrantes_fila;
 			args_imigrantes[i].juiz_dentro = &juiz_dentro;
+			args_imigrantes[i].lock = &lock1;
 			args_imigrantes[i].confirm = &confirm;
 			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
 			args_imigrantes[i].imigrantes_fila = &imigrantes_fila;
