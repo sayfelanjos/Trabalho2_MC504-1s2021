@@ -1,53 +1,350 @@
 #include <stdio.h>
 #include <pthread.h>
-#include "spectators/spectators.h"
-#include "judge/judge.h"
+#include <semaphore.h>
+#include "rotinas.h"
+#include <stdlib.h>
+
+int juiz_dentro = 0; // 0 se o juiz está fora e 1 caso contrário.
+
+sem_t confirm; //semaforo que indica que o juiz ja confirmou
+
+sem_t juiz_na_sala; // semaforo que indica que o juiz saiu do predio
+
+int num_espectadores = 0; // número de espectadores
+
+sem_t espectadores_fila; // permite a entrada de novos espectadores
+
+int num_imigrantes_fila = 0; // número de imigrantes na fila 
+
+sem_t imigrantes_fila; // permite a entrada de novos imigrantes
+
+sem_t assentar; // permite que somente um imigrante se assente por vez para certificação.
+
+int num_imigrantes_check_in = 0; // número de imigrantes fazendo check-in
+
+sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
+
+sem_t certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
+
+sem_t inseri_espectador;
+
+sem_t altera_tela;
+
+sem_t inseri_imigrantes;
+
+sem_t inseri_imigrantes_fila;
+
+sem_t inseri_imigrantes_check_in;
+int main() {
+
+	system("clear");
+
+	// INICIO CRIA SEMAFOROS ----------------------------------------------
+
+	sem_init(&inseri_imigrantes_check_in,0,1);
+
+	sem_init(&inseri_imigrantes_fila,0,1);
+
+	sem_init(&inseri_imigrantes,0,1);
+
+	sem_init(&confirm,0,1); 
+
+	sem_init(&juiz_na_sala,0,0); // sinaliza quando o juiz está na sala.
+
+	sem_init(&espectadores_fila,0,5); // limita a quantidade de espectadores dentro da sala em 5.
+
+	sem_init(&imigrantes_fila,0,5); // limita a quantidade de espectadores na fila em 5.
+
+	sem_init(&assentar,0,1);
+
+	sem_init(&imigrantes_check_in,0,5); // limita a quantidade de imigrantes fazendo check_in em 5.
+
+	sem_init(&inseri_espectador,0,1); // garante que somente um espectador seja inserido por vez.
+
+	sem_init(&altera_tela,0,1); // limita a uma thread por vez a alteração da tela.
+
+	sem_init(&certificado,0,1);
 
 
-#define THREAD_NUM 10
-#define NUM_IMMIGRANTS 10
-#define NUM_SPECTATORS 10
-#define JUDGE 1
+	//FIM CRIA SEMAFOROS -------------------------------------------------- 	
+	
+	//INICIO CRIA ESTRUTURAS AUXILIARES -----------------------------------
+	
+	//Aloca tela[35][100]
+	sem_wait(&altera_tela);
+	char** tela;
+	sem_post(&altera_tela);
 
-int main(int args, char *argv[]) {
-    pthread_t immigrants[NUM_IMMIGRANTS];
-    pthread_t spectators[NUM_SPECTATORS];
-    pthread_t judge;
+	tela = malloc(LINHAS*sizeof(char*));
+	for (int i=0;i<LINHAS;i++) {
+		tela[i] = malloc(COLUNAS*sizeof(char));
+	}
 
-    // sem_init(&semaphore, 0, 1);
+	args_imigrante args_imigrantes[NUM_IMIGRANTES];
 
-    int i;
-    for (i = 10; i < NUM_IMMIGRANTS+10; i++) {
-        int* id_immigrants = malloc(sizeof(int));
-        *id_immigrants = i;
-        if(pthread_create(&immigrants[i], NULL, &immigrants_routine, id_immigrants) != 0) {
-            perror("Failed to create thread");
-        }
-    }
-    for (i = 20; i < NUM_SPECTATORS+20; i++) {
-        int* id_spectators = malloc(sizeof(int));
-        *id_spectators = i;
-        if (pthread_create(&spectators[i], NULL, &spectators_routine, id_spectators) != 0) {
-            perror("Failed to create thread");
-        }
-    }
-    if (pthread_create(&judge, NULL, &judge_routine) != 0) {
-        perror("Failed to create thread");
-    }
-    // for (i = 0; i < NUM_IMMIGRANTS; i++) {
-    //     if (pthread_join(immigrants[i], NULL) != 0) {
-    //         perror("Failed to join thread");
-    //     }
-    // }
-    // for (i = 0; i < NUM_SPECTATORS; i++) {
-    //     if (pthread_join(spectators[i], NULL) != 0) {
-    //         perror("Failed to join thread");
-    //     }
-    // }
-    // if (pthread_join(judge, NULL) != 0) {
-    //     perror("Failed to join thread");
-    // }
+	args_espectador args_espectadores[NUM_ESPECTADORES];
 
-    pthread_exit(0);
-    return 0;
+	args_juiz arg_juiz;
+
+	int indice_imigrantes = 0; // índice inicial das threads
+
+	int indice_espectadores = 0; // índice inicial das threads
+
+			//titulo
+	char* titulo[73]= {                                                                                           
+	"  #####                                    #####                         ", 
+	" #     #  #####   ######  ######  #    #  #     #    ##    #####   ##### ",
+	" #        #    #  #       #       ##   #  #         #  #   #    #  #    #", 
+	" #  ####  #    #  #####   #####   # #  #  #        #    #  #    #  #    #", 
+	" #     #  #####   #       #   args_juiz    #  # #  #        ######  #####   #    #", 
+	" #     #  #   #   #       #       #   ##  #     #  #    #  #   #   #    #", 
+	"  #####   #    #  ######  ######  #    #   #####   #    #  #    #  ##### "
+	};
+
+	//fim
+	char* fim[25] = {
+		"#######  #     #  ###### ", 
+		"#        ##    #  #     #",
+		"#        # #   #  #     #",
+		"#####    #  #  #  #     #", 
+		"#        #   # #  #     #", 
+		"#        #    ##  #     #", 
+		"#######  #     #  ###### "
+		};
+		
+		//imagem1
+	char* imagem1[100] = { //tela vazia
+	"____________________________________________________________________________________________________",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|__________________________________________________________________________________________________|",	
+	};             
+
+		//imagem2
+	char* imagem2[100] = { //tela somente com mensagens
+	"__________________________________________COURT OF JUSTICE__________________________________________",
+	"|  SWEAR/GET CERTIFICATE:                                                                          |",
+	"|                               args_juiz                                                                   |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                       SPECTORS:                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|   CHECKED IN:                                                                                    |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|   ENTRY:                                                                                         |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|                                                                                                  |",
+	"|__________________________________________________________________________________________________|",	
+	};
+
+	char* imagem3[100] = { //tela cheia
+	"__________________________________________COURT OF JUSTICE__________________________________________",
+	"|  SWEAR/GET CERTIFICATE:                      Judge                                               |",
+	"|      Immigrant ?                            @@@_@@@                                              |",
+	"|         (^^)                               @@@/ \\@@@                                             |",
+	"|        / || \\                              @@\\O O/@@                                             |",
+	"|       c  xx  c              args_juiz               @@@\\-/@@@                                             |",
+	"|          ||                                @@@/ \\@@@                                             |",
+	"|          ||                                  /\\|/\\                                               |",
+	"|          LL                                                                                      |",
+	"|                                       SPECTORS:                                                  |",
+	"|                                       Spectator ? Spectator ? Spectator ? Spectator ? Spectator ?|",
+	"|                                          (00)        (00)        (00)        (00)        (00)    |",
+	"|                                         / || \\      / || \\      / || \\      / || \\      / || \\   |",
+	"|                                        c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c  |",
+	"|                                           ||          ||          ||          ||          ||     |",
+	"|                                           ||          ||          ||          ||          ||     |",
+	"|                                           LL          LL          LL          LL          LL     |",
+	"|   CHECKED IN:                                                                                    |",
+	"|Immigrant ? Immigrant ? Immigrant ? Immigrant ? Immigrant ?                                       |",
+	"|   (^^)        (^^)        (^^)        (^^)        (^^)                                           |",
+	"|  / || \\      / || \\      / || \\      / || \\      / || \\                                          |",
+	"| c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c                                         |",
+	"|    ||          ||          ||          ||          ||                                            |",
+	"|    ||          ||          ||          ||          ||                                            |",
+	"|    LL          LL          LL          LL          LL                                            |",
+	"|                                                                                                  |",
+	"|   ENTRY:                                                                                         |",
+	"|Immigrant ? Immigrant ? Immigrant ? Immigrant ? Immigrant ?                                       |",
+	"|   (^^)        (^^)        (^^)        (^^)        (^^)                                           |",
+	"|  / || \\      / || \\      / || \\      / || \\      / || \\                                          |",
+	"| c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c                                         |",
+	"|    ||          ||          ||          ||          ||                                            |",
+	"|    ||          ||          ||          ||          ||                                            |",
+	"|    LL          LL          LL          LL          LL                                            |",
+	"|__________________________________________________________________________________________________|",
+	};             
+		
+	char* vazio[11] = { 
+	"           ",
+	"           ",
+	"Immigrant ?",
+	"   (^^)    ",
+	"  / || \\   ",
+	" c  xx  c  ",
+	"    ||     ",
+	"    ||     ", 
+	"    LL     ",
+	};
+
+	char* spectator[11] = {  
+	"Spectator ?",
+		"   (00)    ",
+		"  / || \\   ",
+		" c  xx  c  ",
+		"    ||     ",
+		"    ||     ",
+		"    LL     ",
+		};
+		
+		char* judge[11] = {  
+		"   Judge   ",
+		"  @@@_@@@  ",
+		" @@@/ \\@@@ ",
+		" @@\\O O/@@ ",
+		" @@@\\-/@@@ ",
+		" @@@/ \\@@@ ",
+		"   /\\|/\\   ",
+		}; 
+		
+	char mensagem[16] = "\"confirmed!\" <--";
+	char apaga[16]    = "                ";
+
+	// FIM CRIA ESTRUTURAS AUXILIARES --------------------------------------
+	
+	// INICIO CRIA THREADS ------------------------------------------------
+
+	pthread_t imigrantes[NUM_IMIGRANTES]; //threads para os imigrantes
+	pthread_t espectadores[NUM_ESPECTADORES]; //threads para os espectadores
+	pthread_t juiz; //thread para o juiz
+	while(1) {
+		juiz_dentro = 0;
+		num_espectadores = 0;
+		num_imigrantes_fila = 0;
+		num_imigrantes_check_in = 0;
+
+		//INICIO CRIA PARAMETROS THREADS --------------------------------------
+	
+		for (int i=0;i<NUM_IMIGRANTES;i++) {
+			args_imigrantes[i].indice = indice_imigrantes;
+			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
+			args_imigrantes[i].num_imigrantes_fila = &num_imigrantes_fila;
+			args_imigrantes[i].juiz_dentro = &juiz_dentro;
+			args_imigrantes[i].confirm = &confirm;
+			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
+			args_imigrantes[i].imigrantes_fila = &imigrantes_fila;
+			args_imigrantes[i].inseri_imigrante_fila = &inseri_imigrantes_fila;	
+			args_imigrantes[i].inseri_imigrante_check_in = &inseri_imigrantes_check_in;
+			args_imigrantes[i].assentar = &assentar;	 
+			args_imigrantes[i].check_in = &imigrantes_check_in;
+			args_imigrantes[i].certificado = &certificado;
+			args_espectadores[i].indice = indice_espectadores;
+			args_espectadores[i].num_espectadores = &num_espectadores;
+			args_espectadores[i].juiz_dentro = &juiz_dentro;
+			args_espectadores[i].inseri_espectador = &inseri_espectador;
+			args_espectadores[i].juiz_na_sala = &juiz_na_sala;
+			args_espectadores[i].espectadores_fila = &espectadores_fila;
+			indice_imigrantes++;
+			indice_espectadores++;
+		}
+		arg_juiz.juiz_dentro = &juiz_dentro;
+		arg_juiz.num_imigrantes_check_in = &num_imigrantes_check_in;
+		arg_juiz.confirm = &confirm;
+		arg_juiz.juiz_na_sala = &juiz_na_sala;
+		arg_juiz.assentar = &assentar;
+		arg_juiz.certificado = &certificado;
+
+		// FIM CRIA PARAMETROS THREADS -----------------------------------------
+
+		// INICIO CRIA THREADS ---------------------------------------------------
+
+		if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
+			perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
+		}
+		for (int i=0;i<NUM_IMIGRANTES;i++) {
+			if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
+				perror("Erro na criacao da thread do imigrante.\n"); 
+			}
+		}
+		for (int i=0; i<NUM_ESPECTADORES;i++) {
+			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
+				perror("Erro na criacao da thread do espectador."); 
+			}
+		}
+		for (int i=0; i < NUM_IMIGRANTES; i++) {
+			if (pthread_join(imigrantes[i], NULL) != 0) {
+				perror("Falha em join imigrantes.");
+			}
+		}
+		for (int i=0; i < NUM_ESPECTADORES; i++) {
+			if (pthread_join(espectadores[i], NULL) != 0) {
+				perror("Falha em join espectadores.");
+			}
+		}
+		if (pthread_join(juiz, NULL) != 0) {
+			perror("Falha em join juiz.");
+		}
+	}
+
+    	// FIM CRIA THREADS ---------------------------------------------------
+
+	for (int i=0; i <LINHAS; i++)
+  		free (tela[i]) ;
+	free (tela) ;
+
+	return 0;
+	
 }
