@@ -205,7 +205,9 @@ void wait_clear(){
 }
 
 //função imprime tela
-void imprime(int linha, int coluna, char** tela){
+void imprime(char** tela){
+	int linha = 35;
+	int coluna = 100;
 	// linha é o tamanho das linhas
 	// coluna é o tamanho das colunas
 	for (int i=0;i<linha;i++){
@@ -223,6 +225,25 @@ void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela
 	// C é coluna de origem
 	// linha é tamanho das linhas
 	// coluna é tamanho das colunas
+	//LEGENDA:
+        //posicao (2,7) tamanho (7,11) -> espaco de certificado
+        //posicao (10,40) tamanho (7,11) -> espectador 4
+        //posicao (10, 52) tamanho (7, 11) -> espectador 3
+        //posicao (10, 64) tamanho (7, 11) -> espectador 2
+        //posicao (10, 76) tamanho (7, 11) -> espectador 1
+        //posicao (10, 88) tamanho (7, 11) -> espectador 0
+        //posicao (18, 1) tamanho (7, 11) -> checked in 0
+        //posicao (18, 13) tamanho (7, 11) -> cheked in 1
+        //posicao (18, 25) tamanho (7, 11) -> checked in 2
+        //posicao (18, 37) tamanho (7, 11) -> checked in 3
+        //posicao (18, 49) tamanho (7, 11) -> checked in 4
+        //posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
+        //posicao (27, 13) tamanho (7, 11) -> fila imigrantes 1
+        //posicao (27, 25) tamanho (7, 11) -> fila imigrantes 2
+        //posicao (27, 37) tamanho (7, 11) -> fila imigrantes 3
+        //posicao (27, 49) tamanho (7, 11) -> fila imigrantes 4
+        //posicao (1, 45) tamanho (7, 11) -> juiz
+
 	for (int i=0;i<linha;i++) {
 		for (int j=0;j<coluna;j++) {
 			tela[L+i][C+j]=texto[i][j];
@@ -244,4 +265,72 @@ void confirmed(char* mensagem, char** tela){
 	for (int j=0;j<16;j++){
 		tela[X][Y+j]=mensagem[j];
 	}
+}
+
+void entra_juiz(char** judge,char** tela) {
+	//posicao (1, 45) tamanho (7, 11) -> juiz
+	insere_texto(1,45, 7, 11, judge, tela);
+	imprime(tela);
+}
+
+void juiz_confirma(char* mensagem, char* apaga, char** tela) {
+	confirmed(mensagem,tela);
+	imprime(tela);
+	confirmed(apaga,tela);
+	imprime(tela);
+}
+
+void sai_juiz(char** vazio, char** tela) {
+	//posicao (1, 45) tamanho (7, 11) -> juiz
+        insere_texto(1,45, 7, 11, vazio, tela);
+        imprime(tela);
+}
+
+void entra_imigrante(int posfila,char** immigrant, char** tela) {
+	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
+	insere_texto(27,1+12*posfila, 7, 11, immigrant, tela);
+	imprime(tela);
+}
+
+void checkin_imigrante(int posfila, int poschekin,char** immigrant, char** vazio, char** tela) {
+	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
+	//posicao (18, 1) tamanho (7, 11) -> checked in 0
+	insere_texto(27,1+12*posfila, 7, 11, vazio, tela);
+	insere_texto(18,1+12*poscheckin, 7, 11, immigrant, tela);
+	imprime(tela);
+}
+
+void pegar_certificado(int poscheckin,char**immigrant,char** vazio, char** tela) {
+	//posicao (2,7) tamanho (7,11) -> espaco de certificado
+	//posicao (18, 1) tamanho (7, 11) -> checked in 0
+	insere_texto(18,1+12*poscheckin, 7, 11, vazio, tela);
+	insere_texto(2,7, 7, 11, immigrant, tela);
+	imprime(tela);
+	insere_texto(18,1+12*poscheckin, 7, 11, immigrant, tela);
+        insere_texto(2,7, 7, 11, vazio, tela);
+        imprime(tela);
+	
+}
+
+void sai_imigrante(int poscheckin, char** vazio, char** tela) {
+
+	//posicao (18, 1) tamanho (7, 11) -> checked in 0
+	insere_texto(18,1+12*poscheckin, 7, 11, vazio, tela);
+	imprime(tela);
+}
+
+void entra_espectador(int pos, char** spectator, char** tela) {
+	//posicao (10, 88) tamanho (7, 11) -> espectador 0
+	insere_texto(10,88-12*pos, 7, 11, spectator, tela);
+	imprime(tela);
+}
+
+void espectar(int tempo) {
+	sleep(tempo);
+}
+
+void sai_espectador(int pos, char** vazio, char** tela) {
+	//posicao (10, 88) tamanho (7, 11) -> espectador 0
+        insere_texto(10,88-12*pos, 7, 11, vazio, tela);
+        imprime(tela);
 }
