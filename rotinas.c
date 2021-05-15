@@ -8,113 +8,129 @@ void* rotina_imigrante (void *args) {
 	int pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
 	int pos_check_in; // idem pos_fila
 	args_imigrante* argumentos = (args_imigrante*) args;
-	sem_wait(argumentos->imigrantes_fila); // garante que somente 5 imigrantes entrem na fila por vez.
-	sem_wait(argumentos->inseri_imigrante_fila); // garante que somente 1 imigrante seja inserido por vez.
-		if (*argumentos->juiz_dentro == 0) {
-			switch (*argumentos->num_imigrantes_fila)
-			{
-			case 0:
-				// TODO
-				/* inseri o imigrante de check-in de posição 0 */
-				printf("Imigrante %d entrou na fila.\n", argumentos->indice);
-				sleep(3);
-				pos_fila = 0;
-				break;
-			case 1:
-				// TODO
-				/* inseri o imigrante de check-in de posição 1 */
-				printf("Imigrante %d entrou na fila.\n", argumentos->indice);
-				sleep(3);
-				pos_fila = 1;
-				break;
-			case 2:
-				// TODO
-				/* inseri o imigrante de check-in de posição 2 */
-				printf("Imigrante %d entrou na fila.\n", argumentos->indice);
-				sleep(3);
-				pos_fila = 2;
-				break;
-			case 3:
-				// TODO
-				/* inseri o imigrante de check-in de posição 3 */
-				printf("Imigrante %d entrou na fila.\n", argumentos->indice);
-				sleep(3);
-				pos_fila = 3;
-				break;								
-			case 4:
-				// TODO
-				/* inseri o imigrante de check-in de posição 4 */
-				printf("Imigrante %d entrou na fila.\n", argumentos->indice);
-				sleep(3);
-				pos_fila = 4;
-				break;							
-			default:
-				break;
-			}
-			*argumentos->num_imigrantes_fila + 1;
-			printf("O número atual de imigrantes na fila é %d\n", *argumentos->num_imigrantes_fila);				
+	int * valor = malloc(sizeof(int));
+	sem_getvalue(argumentos->imigrantes, valor);
+	printf("O valor atual do semáforo é %d\n", *valor);
+	sem_wait(argumentos->imigrantes); // garante que somente 5 imigrantes entrem na fila por vez.
+	printf("PASSEI AQUI!\n");
+	sem_wait(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido por vez.
+	if (*argumentos->juiz_dentro == 0) {
+		switch (*argumentos->num_imigrantes_fila)
+		{
+		case 0:
+			// TODO
+			/* inseri o imigrante de check-in de posição 0 */
+			printf("Imigrante %d entrou na fila.\n", argumentos->indice);
+			sleep(2);
+			pos_fila = 0;
+			break;
+		case 1:
+			// TODO
+			/* inseri o imigrante de check-in de posição 1 */
+			printf("Imigrante %d entrou na fila.\n", argumentos->indice);
+			sleep(2);
+			pos_fila = 1;
+			break;
+		case 2:
+			// TODO
+			/* inseri o imigrante de check-in de posição 2 */
+			printf("Imigrante %d entrou na fila.\n", argumentos->indice);
+			sleep(2);
+			pos_fila = 2;
+			break;
+		case 3:
+			// TODO
+			/* inseri o imigrante de check-in de posição 3 */
+			printf("Imigrante %d entrou na fila.\n", argumentos->indice);
+			sleep(2);
+			pos_fila = 3;
+			break;								
+		case 4:
+			// TODO
+			/* inseri o imigrante de check-in de posição 4 */
+			printf("Imigrante %d entrou na fila.\n", argumentos->indice);
+			sleep(2);
+			pos_fila = 4;
+			break;							
+		default:
+			break;
 		}
-		sem_wait(argumentos->check_in); // garante que somente 5 imigrantes façam check-in por vez.
-		//sem_post(argumentos->juiz_na_sala); // habilita a entrada do juiz.
-		sem_wait(argumentos->inseri_imigrante_check_in); // garante que somente 1 imigrante seja inserido no check in por vez.
-			sem_post(argumentos->imigrantes_fila);
-			switch (*argumentos->num_imigrantes_check_in)
-			{
-			case 0:
-				// TO DO
-				/* inseri o imigrante de check-in de posição 0 */
-				printf("Imigrante %d fez check in.\n", argumentos->indice);
-				sleep(3);
-				pos_check_in = 0;
-				break;
-			case 1:
-				// TO DO
-				/* inseri o imigrante de check-in de posição 1 */
-				printf("Imigrante %d fez check in.\n", argumentos->indice);
-				sleep(3);
-				pos_check_in = 1;
-				break;
-			case 2:
-				// TO DO
-				/* inseri o imigrante de check-in de posição 2 */
-				printf("Imigrante %d fez check in.\n", argumentos->indice);
-				sleep(3);
-				pos_check_in = 2;
-				break;
-			case 3:
-				// TO DO
-				/* inseri o imigrante de check-in de posição 3 */
-				printf("Imigrante %d fez check in.\n", argumentos->indice);
-				sleep(3);
-				pos_check_in = 3;
-				break;								
-			case 4:
-				// TO DO
-				/* inseri o imigrante de check-in de posição 4 */
-				printf("Imigrante %d fez check in.\n", argumentos->indice);
-				sleep(3);
-				pos_check_in = 4;
-				break;							
-			default:
-				break;
-				}
-			*argumentos->num_imigrantes_check_in++;
-			printf("Valor atual de imigrantes no check_in é %d\n", *argumentos->num_imigrantes_check_in);
-		sem_post(argumentos->inseri_imigrante_check_in);
-		sem_post(argumentos->inseri_imigrante_fila); // libera a inserção de um novo imigrante na fila.
-		sem_wait(argumentos->assentar);
-		printf("Imigrante %d fez juramento.", argumentos->indice);
-		// TO DO 
-		// remove imigrante do check in e inseri na cadeira e aguarda certificado
-			sem_wait(argumentos->certificado);
-				printf("Imigrante %d recebeu certificado.", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)++;
+		printf("O número atual de imigrantes na fila é %d\n", *argumentos->num_imigrantes_fila);				
+	}
+	sem_post(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido no check in por vez.		
+	sleep(2);
+	sem_wait(argumentos->check_in); // garante que somente 5 imigrantes façam check-in por vez.
+	sem_wait(argumentos->inseri_imigrantes_check_in);
+	switch (*argumentos->num_imigrantes_check_in)
+	{
+	case 0:
 		// TO DO
-		// Aqui devo retornar o imigrante para o check in;
+		/* inseri o imigrante de check-in de posição 0 */
+		printf("Imigrante %d fez check in.\n", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)--;
+		printf("O número de imigrantes na fila é %d.\n", *argumentos->num_imigrantes_fila);
+		sleep(2);
+		pos_check_in = 0;
+		break;
+	case 1:
+		// TO DO
+		/* inseri o imigrante de check-in de posição 1 */
+		printf("Imigrante %d fez check in.\n", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)--;
+		printf("O número de imigrantes na fila é %d.\n", *argumentos->num_imigrantes_fila);
+		sleep(2);
+		pos_check_in = 1;
+		break;
+	case 2:
+		// TO DO
+		/* inseri o imigrante de check-in de posição 2 */
+		printf("Imigrante %d fez check in.\n", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)--;
+		printf("O número de imigrantes na fila é %d.\n", *argumentos->num_imigrantes_fila);
+		sleep(2);
+		pos_check_in = 2;
+		break;
+	case 3:
+		// TO DO
+		/* inseri o imigrante de check-in de posição 3 */
+		printf("Imigrante %d fez check in.\n", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)--;
+		printf("O número de imigrantes na fila é %d.\n", *argumentos->num_imigrantes_fila);
+		sleep(2);
+		pos_check_in = 3;
+		break;								
+	case 4:
+		// TO DO
+		/* inseri o imigrante de check-in de posição 4 */
+		printf("Imigrante %d fez check in.\n", argumentos->indice);
+		(*argumentos->num_imigrantes_fila)--;
+		printf("O número de imigrantes na fila é %d.\n", *argumentos->num_imigrantes_fila);
+		sleep(2);
+		pos_check_in = 4;
+		break;							
+	default:
+		break;
+		}
+	(*argumentos->num_imigrantes_check_in)++;
+	printf("Valor atual de imigrantes no check_in é %d\n", *argumentos->num_imigrantes_check_in);
+	sem_post(argumentos->inseri_imigrantes_check_in);
+	sem_post(argumentos->imigrantes); // libera a inserção de um novo imigrante na fila.
+	printf("Aguardando o juiz.");
+	sem_post(argumentos->juiz_na_sala);
+	sem_wait(argumentos->assentar);
+	printf("Imigrante %d fez juramento.", argumentos->indice);
+	// TO DO 
+	// remove imigrante do check in e inseri na cadeira e aguarda certificado
+	sem_wait(argumentos->certificado);
+	printf("Imigrante %d recebeu certificado.", argumentos->indice);
+	// TO DO
+	// Aqui devo retornar o imigrante para o check in;
 }
 
 void* rotina_juiz (void* args) {
 	args_juiz* argumentos = (args_juiz*) args;
-	sleep(1);
+	sleep(3);
 	sem_wait(argumentos->juiz_na_sala);
 		*argumentos->juiz_dentro = 1;
 		printf("Juiz entrou na sala.\n");
@@ -122,10 +138,11 @@ void* rotina_juiz (void* args) {
 		// juiz entra na sala.
 		for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
 			sem_post(argumentos->assentar); // libera a entrada de um imigrante para juramento e certificação.
-			sleep(1);
+			sleep(2);
 			sem_post(argumentos->certificado);
 			// TO DO 
-			// entrega o certificado.
+			// entrega o certificado
+			printf("Voltando para o check in.");
 		}
 		// TO DO 
 		// juiz confirma e sai da sala.
@@ -179,21 +196,16 @@ void* rotina_espectador (void* args) {
 					default:
 						break;
 				}
-				*argumentos->num_espectadores++;
+				(*argumentos->num_espectadores)++;
 				printf("O número atual de espectadores na sala é %d\n", *argumentos->num_espectadores);
 				sleep(3);
 				sem_post(argumentos->inseri_espectador);
-
-				
 				// TO DO 
 				// remover o espectador na posição pos. 
 				// colocar tempo de espera.
-				
-
 		}
-
 	sem_post(argumentos->espectadores_fila);
-	*argumentos->num_espectadores--;
+	(*argumentos->num_espectadores)--;
 	printf("Espectador %d saiu da sala.\n", argumentos->indice);
 }
 

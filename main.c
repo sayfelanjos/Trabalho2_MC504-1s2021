@@ -89,13 +89,13 @@ int main() {
 
 	int indice_espectadores = 0; // índice inicial das threads
 
-	int juiz_dentro; // 0 se o juiz está fora e 1 caso contrário.
+	int juiz_dentro = 0; // 0 se o juiz está fora e 1 caso contrário.
 
-	int num_espectadores; // número de espectadores
+	int num_espectadores = 0; // número de espectadores
 
-	int num_imigrantes_fila; // número de imigrantes na fila 
+	int num_imigrantes_fila = 0; // número de imigrantes na fila 
 
-	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
+	int num_imigrantes_check_in = 0; // número de imigrantes fazendo check-in
 
 			//titulo
 	char* titulo[73]= {                                                                                           
@@ -103,7 +103,7 @@ int main() {
 	" #     #  #####   ######  ######  #    #  #     #    ##    #####   ##### ",
 	" #        #    #  #       #       ##   #  #         #  #   #    #  #    #", 
 	" #  ####  #    #  #####   #####   # #  #  #        #    #  #    #  #    #", 
-	" #     #  #####   #       #   args_juiz    #  # #  #        ######  #####   #    #", 
+	" #     #  #####   #       #       #  # #  #        ######  #####   #    #", 
 	" #     #  #   #   #       #       #   ##  #     #  #    #  #   #   #    #", 
 	"  #####   #    #  ######  ######  #    #   #####   #    #  #    #  ##### "
 	};
@@ -160,7 +160,7 @@ int main() {
 
 		//imagem2
 	char* imagem2[100] = { //tela somente com mensagens
-	"__________________________________________COURT OF JUSTICE__________________________________________",
+	"___________________________0x7fffffffc688_______________COURT OF JUSTICE__________________________________________",
 	"|  SWEAR/GET CERTIFICATE:                                                                          |",
 	"|                               args_juiz                                                                   |",
 	"|                                                                                                  |",
@@ -243,7 +243,10 @@ int main() {
 	"  / || \\   ",
 	" c  xx  c  ",
 	"    ||     ",
-	"    ||     ", 
+	"    ||     ", 		// juiz_dentro = 0;
+		// num_espectadores = 0;
+		// num_imigrantes_fila = 0;
+		// num_imigrantes_check_in = 0;
 	"    LL     ",
 	};
 
@@ -279,10 +282,10 @@ int main() {
 	pthread_t juiz; //thread para o juiz
 	
 	while(1) {
-		juiz_dentro = 0;
-		num_espectadores = 0;
-		num_imigrantes_fila = 0;
-		num_imigrantes_check_in = 0;
+		// juiz_dentro = 0;
+		// num_espectadores = 0;
+		// num_imigrantes_fila = 0;
+		// num_imigrantes_check_in = 0;
 
 		//INICIO CRIA PARAMETROS THREADS --------------------------------------
 	
@@ -294,9 +297,9 @@ int main() {
 			args_imigrantes[i].lock = &lock1;
 			args_imigrantes[i].confirm = &confirm;
 			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
-			args_imigrantes[i].imigrantes_fila = &imigrantes_fila;
-			args_imigrantes[i].inseri_imigrante_fila = &inseri_imigrantes_fila;	
-			args_imigrantes[i].inseri_imigrante_check_in = &inseri_imigrantes_check_in;
+			args_imigrantes[i].imigrantes = &imigrantes_fila;
+			args_imigrantes[i].inseri_imigrantes_fila = &inseri_imigrantes_fila;	
+			args_imigrantes[i].inseri_imigrantes_check_in = &inseri_imigrantes_check_in;
 			args_imigrantes[i].assentar = &assentar;	 
 			args_imigrantes[i].check_in = &imigrantes_check_in;
 			args_imigrantes[i].certificado = &certificado;
@@ -327,22 +330,23 @@ int main() {
 			if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
 				perror("Erro na criacao da thread do imigrante.\n"); 
 			}
+			// sleep(2);
 		}
-		for (int i=0; i<NUM_ESPECTADORES;i++) {
-			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
-				perror("Erro na criacao da thread do espectador."); 
-			}
-		}
+		// for (int i=0; i<NUM_ESPECTADORES;i++) {
+		// 	if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
+		// 		perror("Erro na criacao da thread do espectador."); 
+		// 	}
+		// }
 		for (int i=0; i < NUM_IMIGRANTES; i++) {
 			if (pthread_join(imigrantes[i], NULL) != 0) {
 				perror("Falha em join imigrantes.");
 			}
 		}
-		for (int i=0; i < NUM_ESPECTADORES; i++) {
-			if (pthread_join(espectadores[i], NULL) != 0) {
-				perror("Falha em join espectadores.");
-			}
-		}
+	// 	for (int i=0; i < NUM_ESPECTADORES; i++) {
+	// 		if (pthread_join(espectadores[i], NULL) != 0) {
+	// 			perror("Falha em join espectadores.");
+	// 		}
+	// 	}
 		if (pthread_join(juiz, NULL) != 0) {
 			perror("Falha em join juiz.");
 		}

@@ -13,9 +13,9 @@ typedef struct args_imigrante {
 	pthread_mutex_t * lock;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
-	sem_t* imigrantes_fila;
-	sem_t* inseri_imigrante_fila;
-	sem_t* inseri_imigrante_check_in;
+	sem_t* imigrantes;
+	sem_t* inseri_imigrantes_fila;
+	sem_t* inseri_imigrantes_check_in;
 	sem_t* assentar;
 	sem_t* check_in;
 	sem_t* certificado;
