@@ -70,10 +70,7 @@ int main() {
 	//INICIO CRIA ESTRUTURAS AUXILIARES -----------------------------------
 	
 	//Aloca tela[35][100]
-	sem_wait(&altera_tela);
 	char** tela;
-	sem_post(&altera_tela);
-
 	tela = malloc(LINHAS*sizeof(char*));
 	for (int i=0;i<LINHAS;i++) {
 		tela[i] = malloc(COLUNAS*sizeof(char));
@@ -235,9 +232,17 @@ int main() {
 	"|__________________________________________________________________________________________________|",
 	};             
 		
-	char* vazio[11] = { 
+	char* vazio[11] = {
 	"           ",
 	"           ",
+	"           ",
+	"           ",
+	"           ",
+	"           ",
+	"           ",
+	};
+
+	char* immigrant[11] = {	
 	"Immigrant ?",
 	"   (^^)    ",
 	"  / || \\   ",
@@ -252,23 +257,23 @@ int main() {
 
 	char* spectator[11] = {  
 	"Spectator ?",
-		"   (00)    ",
-		"  / || \\   ",
-		" c  xx  c  ",
-		"    ||     ",
-		"    ||     ",
-		"    LL     ",
-		};
+	"   (00)    ",
+	"  / || \\   ",
+	" c  xx  c  ",
+	"    ||     ",
+	"    ||     ",
+	"    LL     ",
+	};
 		
-		char* judge[11] = {  
-		"   Judge   ",
-		"  @@@_@@@  ",
-		" @@@/ \\@@@ ",
-		" @@\\O O/@@ ",
-		" @@@\\-/@@@ ",
-		" @@@/ \\@@@ ",
-		"   /\\|/\\   ",
-		}; 
+	char* judge[11] = {  
+	"   Judge   ",
+	"  @@@_@@@  ",
+	" @@@/ \\@@@ ",
+	" @@\\O O/@@ ",
+	" @@@\\-/@@@ ",
+	" @@@/ \\@@@ ",
+	"   /\\|/\\   ",
+	}; 
 		
 	char mensagem[16] = "\"confirmed!\" <--";
 	char apaga[16]    = "                ";
@@ -320,6 +325,39 @@ int main() {
 		arg_juiz.certificado = &certificado;
 
 		// FIM CRIA PARAMETROS THREADS -----------------------------------------
+		//INICIO IMPRIMIR IMAGENS DE INTRODUCAO -----------------------
+		//Esvazia a tela
+    		insere_texto(0, 0, 35, 100, imagem1, tela);
+   		//insere titulo
+    		insere_texto(12, 15, 7, 73, titulo, tela);
+        	//imprime titulo
+        	imprime(35, 100, tela);
+
+    		//Esvazia a tela
+    		insere_texto(0, 0, 35, 100, imagem1, tela);
+    		//insere immigrant
+    		insere_texto(12, 42, 7, 11, immigrant, tela);        
+    		//imprime immigrant
+		imprime(35, 100, tela);
+
+        	//Esvazia a tela
+    		insere_texto(0, 0, 35, 100, imagem1, tela);
+  		//insere spectator
+    		insere_texto(12, 42, 7, 11, spectator, tela);        
+    		//imprime spectator
+        	imprime(35, 100, tela);
+
+		//Esvazia a tela
+    		insere_texto(0, 0, 35, 100, imagem1, tela);
+    		//insere judge
+    		insere_texto(12, 42, 7, 11, judge, tela);        
+    		//imprime judge
+        	imprime(35, 100, tela);
+
+
+		//FIM IMPRIMIR IMAGENS DE INTRODUCAO --------------------------
+
+
 
 		// INICIO CRIA THREADS ---------------------------------------------------
 

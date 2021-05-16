@@ -27,17 +27,17 @@
     //     insere_texto(12, 42, 7, 11, judge, tela);        
     //     //imprime judge                                                	
 	// imprime(35, 100, tela);
-	
-	// //insere imagem2
+
+//ATE AQUI OK -----------------------------------------------------------------
+
+	//insere imagem2
 	// insere_texto(0, 0, 35, 100, imagem2, tela);        
-    //     //imprime imagem2                                                	
+    	//imprime imagem2
 	// imprime(35, 100, tela);	
-	
 	// //insere imagem3
 	// insere_texto(0, 0, 35, 100, imagem3, tela);        
-    //     //imprime imagem3                                               	
-	// imprime(35, 100, tela);
-		
+    	//imprime imagem3                                               	       // imprime(35, 100, tela);
+//ACHO DESNECESSARIO----------------------------------------------------------	
 	// //atualiza indice
 	// atualiza_indice(27, 1, '1', tela); // ENTRY: 1
 	// atualiza_indice(27, 13, '2', tela); // ENTRY: 2
@@ -57,15 +57,36 @@
 	// atualiza_indice(2, 7, 'X', tela); // SWEAR/GET CERTIFICATE: X
 	// //imprime indice   
 	// imprime(35, 100, tela);
-	
-	// //insere mensagem de confirmação
+
+//ACHO DESNECESSARIO----------------------------------------------------------
+
+	//LEGENDA:
+	//posicao (2,7) tamanho (7,11) -> espaco de confirmacao
+	//posicao (10,40) tamanho (7,11) -> so deus sabe
+	//posicao (10, 52) tamanho (7, 11) ->
+	//posicao (10, 64) tamanho (7, 11) ->
+	//posicao (10, 76) tamanho (7, 11) ->
+	//posicao (10, 88) tamanho (7, 11) ->
+	//posicao (18, 1) tamanho (7, 11) ->
+	//posicao (18, 13) tamanho (7, 11) ->
+	//posicao (18, 25) tamanho (7, 11) ->
+	//posicao (18, 37) tamanho (7, 11) ->
+	//posicao (18, 49) tamanho (7, 11) ->
+	//posicao (27, 1)  tamanho (7, 11) ->
+	//posicao (27, 13) tamanho (7, 11) ->
+	//posicao (27, 25) tamanho (7, 11) ->
+	//posicao (27, 37) tamanho (7, 11) ->
+	//posicao (27, 49) tamanho (7, 11) ->
+	//posicao (1, 45) tamanho (7, 11) -> juiz
+
+	//insere mensagem de confirmação
 	// confirmed(mensagem, tela);
-    //     //imprime mensagem de confirmação                                         	
+    	//imprime mensagem de confirmação                                         	
 	// imprime(35, 100, tela);
 	
-    //     //insere vazio
-    //     insere_texto(2, 7, 7, 11, vazio, tela);        
-    //     //imprime vazio                                                	
+  	//insere vazio
+    	//insere_texto(2, 7, 7, 11, vazio, tela);        
+   	//imprime vazio                                                	
 	// imprime(35, 100, tela);
 	
 	// //insere mensagem apaga
