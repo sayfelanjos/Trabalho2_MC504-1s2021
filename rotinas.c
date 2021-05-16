@@ -15,85 +15,26 @@ void* rotina_imigrante (void *args) {
 	sem_wait(argumentos->imigrantes); // garante que somente 5 imigrantes entrem na fila por vez.
 	sem_wait(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido por vez.
 	if (*argumentos->juiz_dentro == 0) {
-		switch (*argumentos->num_imigrantes_fila)
-		{
-		case 0:
-			entra_imigrante(0, argumentos->imagem_imigrante, argumentos->tela);
-			sleep(1);
-			pos_fila = 0;
-			break;
-		case 1:
-			entra_imigrante(1, argumentos->imagem_imigrante, argumentos->tela);
-			sleep(1);
-			pos_fila = 1;
-			break;
-		case 2:
-			entra_imigrante(2, argumentos->imagem_imigrante, argumentos->tela);
-			sleep(1);
-			pos_fila = 2;
-			break;
-		case 3:
-			entra_imigrante(3, argumentos->imagem_imigrante, argumentos->tela);
-			sleep(1);
-			pos_fila = 3;
-			break;								
-		case 4:
-			entra_imigrante(4, argumentos->imagem_imigrante, argumentos->tela);
-			sleep(1);
-			pos_fila = 4;
-			break;							
-		default:
-			break;
-		}
+		entra_imigrante(*argumentos->num_imigrantes_fila, argumentos->indice,argumentos->imagem_imigrante, argumentos->tela);
+		sleep(1);
+		pos_fila = *argumentos->num_imigrantes_fila;
 		(*argumentos->num_imigrantes_fila)++;
 	}
 	sem_post(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido no check in por vez.		
 	sleep(1);
 	sem_wait(argumentos->check_in); // garante que somente 5 imigrantes façam check-in por vez.
 	sem_wait(argumentos->inseri_imigrantes_check_in);
-	switch (*argumentos->num_imigrantes_check_in)
-	{
-	case 0:
-		checkin_imigrante(pos_fila, 0 , argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-		(*argumentos->num_imigrantes_fila)--;
-		sleep(1);
-		pos_check_in = 0;
-		break;
-	case 1:
-		checkin_imigrante(pos_fila, 1 , argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-		(*argumentos->num_imigrantes_fila)--;
-		sleep(1);
-		pos_check_in = 1;
-		break;
-	case 2:
-		checkin_imigrante(pos_fila, 2 , argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-		(*argumentos->num_imigrantes_fila)--;
-		sleep(1);
-		pos_check_in = 2;
-		break;
-	case 3:
-		checkin_imigrante(pos_fila, 3 , argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-		(*argumentos->num_imigrantes_fila)--;
-		sleep(1);
-		pos_check_in = 3;
-		break;								
-	case 4:
-		checkin_imigrante(pos_fila, 4 , argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-		(*argumentos->num_imigrantes_fila)--;
-		sleep(1);
-		pos_check_in = 4;
-		break;							
-	default:
-		break;
-		}
+	checkin_imigrante(pos_fila, *argumentos->num_imigrantes_check_in ,argumentos->indice, argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
+	pos_check_in = *argumentos->num_imigrantes_check_in;
+	(*argumentos->num_imigrantes_fila)--;
+	sleep(1);
 	(*argumentos->num_imigrantes_check_in)++;
 	sem_post(argumentos->inseri_imigrantes_check_in);
 	sem_post(argumentos->imigrantes); // libera a inserção de um novo imigrante na fila.
 	sem_post(argumentos->juiz_na_sala);
 	sem_wait(argumentos->assentar);
-	pegar_certificado(pos_check_in, argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
 	sem_wait(argumentos->certificado);
-	pegar_certificado(pos_check_in, argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
+	pegar_certificado(pos_check_in, argumentos->indice,argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
 }
 
 void* rotina_juiz (void* args) {
@@ -116,7 +57,7 @@ void* rotina_espectador (void* args) {
 	sem_wait(argumentos->espectadores_fila); // garante que no máximo 5 espectador entra na sala por vez.
 	if (*argumentos->juiz_dentro == 0) {
 		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
-		entra_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->imagem_espectador, argumentos->tela);
+		entra_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
 		sleep(1);
 		sem_post(argumentos->inseri_espectador);
 	}
