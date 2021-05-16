@@ -53,18 +53,20 @@ void* rotina_juiz (void* args) {
 }
 
 void* rotina_espectador (void* args) {
+	int pos;
 	args_espectador* argumentos = (args_espectador*) args;
 	sem_wait(argumentos->espectadores_fila); // garante que no máximo 5 espectador entra na sala por vez.
 	if (*argumentos->juiz_dentro == 0) {
 		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
-		entra_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
-		sleep(1);
+		pos = verifica_posicao(argumentos->posicao_espectador_fila);
+		entra_espectador(pos, argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
 		sem_post(argumentos->inseri_espectador);
+		sleep(2);
+		sai_espectador(pos, argumentos->vazio, argumentos->tela);
+		remove_posicao(pos, argumentos->posicao_espectador_fila);
+		sem_post(argumentos->espectadores_fila);
 	}
-	sleep(2);
-	sai_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->vazio, argumentos->tela);
-	remove_posicao(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->posicao_espectador_fila);
-	sem_post(argumentos->espectadores_fila);
+
 }
 
 //função espera e limpa tela
@@ -226,6 +228,6 @@ int verifica_posicao(int * fila) {
 	return -1;
 }
 
-void remove_posicao(char pos, char * fila) {
-	fila[(int)pos] = 0;
+void remove_posicao(int pos, char * fila) {
+	fila[pos] = 0;
 }

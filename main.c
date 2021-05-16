@@ -307,6 +307,9 @@ int main() {
 			args_imigrantes[i].assentar = &assentar;	 
 			args_imigrantes[i].check_in = &imigrantes_check_in;
 			args_imigrantes[i].certificado = &certificado;
+			indice_imigrantes++;
+		}
+		for (int i=0; i<NUM_ESPECTADORES; i++) {
 			args_espectadores[i].indice = indice_espectadores;
 			args_espectadores[i].num_espectadores = &num_espectadores;
 			args_espectadores[i].juiz_dentro = &juiz_dentro;
@@ -317,7 +320,6 @@ int main() {
 			args_espectadores[i].inseri_espectador = &inseri_espectador;
 			args_espectadores[i].juiz_na_sala = &juiz_na_sala;
 			args_espectadores[i].espectadores_fila = &espectadores_fila;
-			indice_imigrantes++;
 			indice_espectadores++;
 		}
 		arg_juiz.juiz_dentro = &juiz_dentro;
