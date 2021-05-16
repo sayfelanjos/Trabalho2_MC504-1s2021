@@ -229,38 +229,38 @@ void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela) {
 	imprime(tela);
 }
 
-void checkin_imigrante(int pos_fila, int pos_chekin,int id,char** imigrante, char** vazio, char** tela) {
+void checkin_imigrante(int pos_fila, int pos_check_in,int id,char** imigrante, char** vazio, char** tela) {
 	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
 	insere_texto(27,1+12*pos_fila, 7, 11, vazio, tela);
-	insere_texto(18,1+12*pos_chekin, 7, 11, imigrante, tela);
-	atualiza_indice(18, 1+12*pos_checkin, id, tela);
+	insere_texto(18,1+12*pos_check_in, 7, 11, imigrante, tela);
+	atualiza_indice(18, 1+12*pos_check_in, id, tela);
 	imprime(tela);
 }
 
-void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela) {
+void pegar_certificado(int pos_check_in,int id,char**imigrante,char** vazio, char** tela) {
 	//posicao (2,7) tamanho (7,11) -> espaco de certificado
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
-	insere_texto(18,1+12*pos_checkin, 7, 11, vazio, tela);
+	insere_texto(18,1+12*pos_check_in, 7, 11, vazio, tela);
 	insere_texto(2,7, 7, 11, imigrante, tela);
 	atualiza_indice(2, 7, id, tela);
 	imprime(tela);
-	insere_texto(18,1+12*pos_checkin, 7, 11, imigrante, tela);
-	atualiza_indice(18, 1+12*pos_checkin, id, tela);
+	insere_texto(18,1+12*pos_check_in, 7, 11, imigrante, tela);
+	atualiza_indice(18, 1+12*pos_check_in, id, tela);
     	insere_texto(2,7, 7, 11, vazio, tela);
     	imprime(tela);
 	
 }
 
-void sai_imigrante(int pos_checkin, char** vazio, char** tela) {
+void sai_imigrante(int pos_check_in, char** vazio, char** tela) {
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
-	insere_texto(18,1+12*pos_checkin, 7, 11, vazio, tela);
+	insere_texto(18,1+12*pos_check_in, 7, 11, vazio, tela);
 	imprime(tela);
 }
 
-void entra_espectador(int pos, int id,char** espectator, char** tela) {
+void entra_espectador(int pos, int id,char** espectador, char** tela) {
 	//posicao (10, 88) tamanho (7, 11) -> espectador 0
-	insere_texto(10,88-12*pos, 7, 11, espectator, tela);
+	insere_texto(10,88-12*pos, 7, 11, espectador, tela);
 	atualiza_indice(10, 88-12*pos, id, tela);
 	imprime(tela);
 }

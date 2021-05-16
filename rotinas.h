@@ -63,7 +63,7 @@ void entra_imigrante(int pos_fila,char** immigrante, char** tela);
 
 void sai_espectador(int pos, char** vazio, char** tela);
 
-void entra_espectador(int pos, char** espectator, char** tela);
+void entra_espectador(int pos, int id,char** espectador, char** tela);
 
 void sai_imigrante(int pos_checkin, char** vazio, char** tela);
 
