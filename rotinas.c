@@ -96,20 +96,20 @@ void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela
 	//LEGENDA:
         //posicao (2,7) tamanho (7,13) -> espaco de certificado
         //posicao (10,40) tamanho (7,13) -> espectador 4
-        //posicao (10, 52) tamanho (7, 13) -> espectador 3
-        //posicao (10, 64) tamanho (7, 13) -> espectador 2
-        //posicao (10, 76) tamanho (7, 13) -> espectador 1
-        //posicao (10, 88) tamanho (7, 13) -> espectador 0
+        //posicao (10, 54) tamanho (7, 13) -> espectador 3
+        //posicao (10, 66) tamanho (7, 13) -> espectador 2
+        //posicao (10, 78) tamanho (7, 13) -> espectador 1
+        //posicao (10, 90) tamanho (7, 13) -> espectador 0
         //posicao (18, 1) tamanho (7, 13) -> checked in 0
-        //posicao (18, 13) tamanho (7, 13) -> cheked in 1
-        //posicao (18, 25) tamanho (7, 13) -> checked in 2
-        //posicao (18, 37) tamanho (7, 13) -> checked in 3
-        //posicao (18, 49) tamanho (7, 13) -> checked in 4
+        //posicao (18, 15) tamanho (7, 13) -> cheked in 1
+        //posicao (18, 27) tamanho (7, 13) -> checked in 2
+        //posicao (18, 39) tamanho (7, 13) -> checked in 3
+        //posicao (18, 51) tamanho (7, 13) -> checked in 4
         //posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
-        //posicao (27, 13) tamanho (7, 13) -> fila imigrantes 1
-        //posicao (27, 25) tamanho (7, 13) -> fila imigrantes 2
-        //posicao (27, 37) tamanho (7, 13) -> fila imigrantes 3
-        //posicao (27, 49) tamanho (7, 13) -> fila imigrantes 4
+        //posicao (27, 15) tamanho (7, 13) -> fila imigrantes 1
+        //posicao (27, 27) tamanho (7, 13) -> fila imigrantes 2
+        //posicao (27, 39) tamanho (7, 13) -> fila imigrantes 3
+        //posicao (27, 51) tamanho (7, 13) -> fila imigrantes 4
         //posicao (1, 45) tamanho (7, 13) -> juiz
 
 	for (int i=0;i<linha;i++) {
@@ -126,12 +126,12 @@ void atualiza_indice(int L, int C, char indice, char** tela){
 	if (indice<10) {
 		tela[L+X][C+Y] = '0';
 		Y++;
-		tela[L+X][C+Y] = indice;
+		tela[L+X][C+Y] = '0'+indice;
 	}
 	else {
-		tela[L+X][C+Y] = indice/10;
+		tela[L+X][C+Y] = '0'+indice/10;
 		Y++;
-		tela[L+X][C+Y] = indice%10;
+		tela[L+X][C+Y] = '0'+indice%10;
 	}
 }
 
