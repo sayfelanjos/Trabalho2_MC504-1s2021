@@ -181,8 +181,17 @@ void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela
 //função que atualiza indice dos bonecos
 void atualiza_indice(int L, int C, char indice, char** tela){
 	int X = 0; //posiçoes fixa da linha do "?" no boneco
-	int Y = 10; //posiçoes fixa da linha do "?" no boneco
-	tela[L+X][C+Y] = indice;
+	int Y = 9; //posiçoes fixa da coluna do "?" no boneco
+	if (indice<10) {
+		tela[L+X][C+Y] = '0';
+		Y++;
+		tela[L+X][C+Y] = indice;
+	}
+	else {
+		tela[L+X][C+Y] = indice/10;
+		Y++;
+		tela[L+X][C+Y] = indice%10;
+	}
 }
 
 //funçao imprime mensagem de confirmação
@@ -213,29 +222,33 @@ void sai_juiz(char** vazio, char** tela) {
 	imprime(tela);
 }
 
-void entra_imigrante(int pos_fila,char** immigrante, char** tela) {
+void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela) {
 	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
 	insere_texto(27,1+12*pos_fila, 7, 11, immigrante, tela);
+	atualiza_indice(27, 1+12*pos_fila, id, tela);
 	imprime(tela);
 }
 
-void checkin_imigrante(int pos_fila, int pos_chekin,char** imigrante, char** vazio, char** tela) {
+void checkin_imigrante(int pos_fila, int pos_chekin,int id,char** imigrante, char** vazio, char** tela) {
 	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
 	insere_texto(27,1+12*pos_fila, 7, 11, vazio, tela);
 	insere_texto(18,1+12*pos_chekin, 7, 11, imigrante, tela);
+	atualiza_indice(18, 1+12*pos_checkin, id, tela);
 	imprime(tela);
 }
 
-void pegar_certificado(int pos_checkin,char**imigrante,char** vazio, char** tela) {
+void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela) {
 	//posicao (2,7) tamanho (7,11) -> espaco de certificado
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
 	insere_texto(18,1+12*pos_checkin, 7, 11, vazio, tela);
 	insere_texto(2,7, 7, 11, imigrante, tela);
+	atualiza_indice(2, 7, id, tela);
 	imprime(tela);
 	insere_texto(18,1+12*pos_checkin, 7, 11, imigrante, tela);
-    insere_texto(2,7, 7, 11, vazio, tela);
-    imprime(tela);
+	atualiza_indice(18, 1+12*pos_checkin, id, tela);
+    	insere_texto(2,7, 7, 11, vazio, tela);
+    	imprime(tela);
 	
 }
 
@@ -245,9 +258,10 @@ void sai_imigrante(int pos_checkin, char** vazio, char** tela) {
 	imprime(tela);
 }
 
-void entra_espectador(int pos, char** espectator, char** tela) {
+void entra_espectador(int pos, int id,char** espectator, char** tela) {
 	//posicao (10, 88) tamanho (7, 11) -> espectador 0
 	insere_texto(10,88-12*pos, 7, 11, espectator, tela);
+	atualiza_indice(10, 88-12*pos, id, tela);
 	imprime(tela);
 }
 
