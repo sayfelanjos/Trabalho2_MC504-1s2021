@@ -1,0 +1,39 @@
+Threads:
+
+	10ximigrantes - id;
+	10xespectadores - id;
+	1xjuiz;
+
+Semaforos:
+	entrar_imigrante - valor numero de imigrantes que cabem no predio
+	entrar_espectador - valor numero de espectadores que cabem no predio
+	deram_chekin - comeca zero (quando alguem entra incrementa e quando da checkin decrementa)
+	cadeira y - valor 1 (pessoa que vai sentar na cadeira)
+	pegar_certificado - valor 1 (uma pessoa pega o certificado de cada vez)
+	juiz_fora - valor 1 (juiz comeca fora)
+	juiz_confirmou - valor -1 (espera o juiz confirmar)
+
+Funcoes:
+
+	imigrantes -
+		enter - espera o juiz sair do predio
+		checkin 
+		swear
+		getcertificate - espera o juiz confirmar
+		leave - espera o juiz sair
+
+	judge - 
+		enter
+		wait (checkin)
+		confirm - espera todos os imigrantes entrarem e darem checkin
+		leave
+	
+	expectators -
+		wait(juiz_fora)
+		post(juiz_fora)
+		wait(tem_vaga)
+		enter - espera o juiz sair do predio
+		spectate
+		leave
+		
+
