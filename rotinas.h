@@ -30,6 +30,7 @@ typedef struct args_espectador {
 	char** imagem_espectador;
 	char** vazio;
 	char** tela;
+	int* posicao_espectador_fila;
 	sem_t *inseri_espectador;
 	sem_t* juiz_na_sala;
 	sem_t* espectadores_fila;
@@ -62,7 +63,7 @@ void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela);
 
 void sai_espectador(int pos, char** vazio, char** tela);
 
-void entra_espectador(int pos, int id,char** espectator, char** tela);
+void entra_espectador(int pos, int id,char** espectador, char** tela);
 
 void sai_imigrante(int pos_checkin, char** vazio, char** tela);
 

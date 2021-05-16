@@ -188,7 +188,7 @@ void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char
 	imprime(tela);
 	insere_texto(18,1+14*pos_checkin, 7, 13, imigrante, tela);
 	atualiza_indice(18, 1+14*pos_checkin, id, tela);
-    	insere_texto(2,7, 7, 11, vazio, tela);
+    	insere_texto(2,7, 7, 13, vazio, tela);
     	imprime(tela);
 	
 }
@@ -201,8 +201,8 @@ void sai_imigrante(int pos_checkin, char** vazio, char** tela) {
 
 void entra_espectador(int pos, int id,char** espectator, char** tela) {
 	//posicao (10, 88) tamanho (7, 13) -> espectador 0
-	insere_texto(10,88-12*pos, 7, 13, espectator, tela);
-	atualiza_indice(10, 88-12*pos, id, tela);
+	insere_texto(10,88-14*pos, 7, 13, espectator, tela);
+	atualiza_indice(10, 88-14*pos, id, tela);
 	imprime(tela);
 }
 

@@ -313,6 +313,7 @@ int main() {
 			args_espectadores[i].imagem_espectador = imagem_espectador;
 			args_espectadores[i].vazio = vazio;
 			args_espectadores[i].tela = tela;
+			args_espectadores[i].posicao_espectador_fila = posicao_espectador_fila;
 			args_espectadores[i].inseri_espectador = &inseri_espectador;
 			args_espectadores[i].juiz_na_sala = &juiz_na_sala;
 			args_espectadores[i].espectadores_fila = &espectadores_fila;
