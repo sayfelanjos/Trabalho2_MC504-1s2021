@@ -39,8 +39,8 @@ typedef struct args_juiz {
 	int* juiz_dentro;
 	int* num_imigrantes_check_in;
 	char ** imagem_juiz;
-	char** mensagem_confirma;
-	char** mensagem_apaga;
+	char* mensagem_confirma;
+	char* mensagem_apaga;
 	char ** tela;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
@@ -58,17 +58,17 @@ void imprime(char** tela);
 
 void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela);
 
-void entra_imigrante(int pos_fila,char** immigrante, char** tela);
+void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela);
 
 void sai_espectador(int pos, char** vazio, char** tela);
 
-void entra_espectador(int pos, char** espectator, char** tela);
+void entra_espectador(int pos, int id,char** espectator, char** tela);
 
 void sai_imigrante(int pos_checkin, char** vazio, char** tela);
 
-void pegar_certificado(int pos_checkin,char**imigrante,char** vazio, char** tela);
+void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela);
 
-void checkin_imigrante(int pos_fila, int pos_chekin,char** imigrante, char** vazio, char** tela);
+void checkin_imigrante(int pos_fila, int pos_chekin,int id,char** imigrante, char** vazio, char** tela);
 
 void sai_juiz(char** vazio, char** tela);
 
