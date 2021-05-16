@@ -61,9 +61,10 @@ void* rotina_espectador (void* args) {
 		pos = verifica_posicao(argumentos->posicao_espectador_fila);
 		entra_espectador(pos, argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
 		sem_post(argumentos->inseri_espectador);
-		sleep(2);
+		sleep(3);
 		sai_espectador(pos, argumentos->vazio, argumentos->tela);
 		remove_posicao(pos, argumentos->posicao_espectador_fila);
+		sleep(1);
 		sem_post(argumentos->espectadores_fila);
 	}
 

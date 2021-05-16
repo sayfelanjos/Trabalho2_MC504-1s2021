@@ -371,9 +371,9 @@ int main() {
 
 		// INICIO CRIA THREADS ---------------------------------------------------
 
-		if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
-			perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
-		}
+		// if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
+		// 	perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
+		// }
 		// for (int i=0;i<NUM_IMIGRANTES;i++) {
 		// 	if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
 		// 		perror("Erro na criacao da thread do imigrante.\n"); 
@@ -395,9 +395,9 @@ int main() {
 				perror("Falha em join espectadores.");
 			}
 		}
-		if (pthread_join(juiz, NULL) != 0) {
-			perror("Falha em join juiz.");
-		}
+	// 	if (pthread_join(juiz, NULL) != 0) {
+	// 		perror("Falha em join juiz.");
+	// 	}
 	}
 
     	// FIM CRIA THREADS ---------------------------------------------------
