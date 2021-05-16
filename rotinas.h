@@ -10,7 +10,6 @@ typedef struct args_imigrante {
 	int *num_imigrantes_check_in;
 	int *num_imigrantes_fila;
 	int *juiz_dentro;
-	pthread_mutex_t * lock;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
 	sem_t* imigrantes;
@@ -44,3 +43,7 @@ void* rotina_imigrante (void* indice);
 void* rotina_juiz (void* parametros);
 
 void* rotina_espectador (void* indice);
+
+void imprime(char** tela);
+
+void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela);

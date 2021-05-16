@@ -28,12 +28,6 @@ sem_t inseri_imigrantes_fila;
 
 sem_t inseri_imigrantes_check_in;
 
-pthread_mutex_t lock1;
-
-pthread_mutex_t lock2;
-
-pthread_mutex_t lock3;
-
 int main() {
 
 	system("clear");
@@ -299,7 +293,6 @@ int main() {
 			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
 			args_imigrantes[i].num_imigrantes_fila = &num_imigrantes_fila;
 			args_imigrantes[i].juiz_dentro = &juiz_dentro;
-			args_imigrantes[i].lock = &lock1;
 			args_imigrantes[i].confirm = &confirm;
 			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
 			args_imigrantes[i].imigrantes = &imigrantes_fila;
@@ -325,39 +318,38 @@ int main() {
 		arg_juiz.certificado = &certificado;
 
 		// FIM CRIA PARAMETROS THREADS -----------------------------------------
-		//INICIO IMPRIMIR IMAGENS DE INTRODUCAO -----------------------
-		//Esvazia a tela
-    		insere_texto(0, 0, 35, 100, imagem1, tela);
-   		//insere titulo
-    		insere_texto(12, 15, 7, 73, titulo, tela);
-        	//imprime titulo
-        	imprime(35, 100, tela);
 
-    		//Esvazia a tela
-    		insere_texto(0, 0, 35, 100, imagem1, tela);
-    		//insere immigrant
-    		insere_texto(12, 42, 7, 11, immigrant, tela);        
-    		//imprime immigrant
-		imprime(35, 100, tela);
+		// INICIO IMPRIMIR IMAGENS DE INTRODUCAO -----------------------
 
-        	//Esvazia a tela
-    		insere_texto(0, 0, 35, 100, imagem1, tela);
-  		//insere spectator
-    		insere_texto(12, 42, 7, 11, spectator, tela);        
-    		//imprime spectator
-        	imprime(35, 100, tela);
+		// Esvazia a tela
+    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+   		// insere titulo
+    	insere_texto(12, 15, 7, 73, titulo, tela);
+        //imprime titulo
+        imprime(tela);
 
-		//Esvazia a tela
-    		insere_texto(0, 0, 35, 100, imagem1, tela);
-    		//insere judge
-    		insere_texto(12, 42, 7, 11, judge, tela);        
-    		//imprime judge
-        	imprime(35, 100, tela);
+    	// Esvazia a tela
+    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    	// insere immigrant
+    	insere_texto(12, 42, 7, 11, immigrant, tela);        
+    	// imprime immigrant
+		imprime(tela);
 
+        // Esvazia a tela
+    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+  		// insere spectator
+    	insere_texto(12, 42, 7, 11, spectator, tela);        
+    	// imprime spectator
+        imprime(tela);
 
-		//FIM IMPRIMIR IMAGENS DE INTRODUCAO --------------------------
+		// Esvazia a tela
+    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    	// insere judge
+    	insere_texto(12, 42, 7, 11, judge, tela);        
+    	// imprime judge
+        imprime(tela);
 
-
+		// FIM IMPRIMIR IMAGENS DE INTRODUCAO --------------------------
 
 		// INICIO CRIA THREADS ---------------------------------------------------
 
@@ -370,21 +362,21 @@ int main() {
 			}
 			// sleep(2);
 		}
-		// for (int i=0; i<NUM_ESPECTADORES;i++) {
-		// 	if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
-		// 		perror("Erro na criacao da thread do espectador."); 
-		// 	}
-		// }
+		for (int i=0; i<NUM_ESPECTADORES;i++) {
+			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
+				perror("Erro na criacao da thread do espectador."); 
+			}
+		}
 		for (int i=0; i < NUM_IMIGRANTES; i++) {
 			if (pthread_join(imigrantes[i], NULL) != 0) {
 				perror("Falha em join imigrantes.");
 			}
 		}
-	// 	for (int i=0; i < NUM_ESPECTADORES; i++) {
-	// 		if (pthread_join(espectadores[i], NULL) != 0) {
-	// 			perror("Falha em join espectadores.");
-	// 		}
-	// 	}
+		for (int i=0; i < NUM_ESPECTADORES; i++) {
+			if (pthread_join(espectadores[i], NULL) != 0) {
+				perror("Falha em join espectadores.");
+			}
+		}
 		if (pthread_join(juiz, NULL) != 0) {
 			perror("Falha em join juiz.");
 		}

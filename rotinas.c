@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "rotinas.h"
 #include <unistd.h>
+#include <stdlib.h>
 
 void* rotina_imigrante (void *args) {
 	int pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
@@ -116,14 +117,14 @@ void* rotina_imigrante (void *args) {
 	printf("Valor atual de imigrantes no check_in é %d\n", *argumentos->num_imigrantes_check_in);
 	sem_post(argumentos->inseri_imigrantes_check_in);
 	sem_post(argumentos->imigrantes); // libera a inserção de um novo imigrante na fila.
-	printf("Aguardando o juiz.");
+	printf("Aguardando o juiz.\n");
 	sem_post(argumentos->juiz_na_sala);
 	sem_wait(argumentos->assentar);
-	printf("Imigrante %d fez juramento.", argumentos->indice);
+	printf("Imigrante %d fez juramento.\n", argumentos->indice);
 	// TO DO 
 	// remove imigrante do check in e inseri na cadeira e aguarda certificado
 	sem_wait(argumentos->certificado);
-	printf("Imigrante %d recebeu certificado.", argumentos->indice);
+	printf("Imigrante %d recebeu certificado.\n", argumentos->indice);
 	// TO DO
 	// Aqui devo retornar o imigrante para o check in;
 }
@@ -132,21 +133,21 @@ void* rotina_juiz (void* args) {
 	args_juiz* argumentos = (args_juiz*) args;
 	sleep(3);
 	sem_wait(argumentos->juiz_na_sala);
-		*argumentos->juiz_dentro = 1;
-		printf("Juiz entrou na sala.\n");
-		// TO DO
-		// juiz entra na sala.
-		for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
-			sem_post(argumentos->assentar); // libera a entrada de um imigrante para juramento e certificação.
-			sleep(2);
-			sem_post(argumentos->certificado);
-			// TO DO 
-			// entrega o certificado
-			printf("Voltando para o check in.");
-		}
+	*argumentos->juiz_dentro = 1;
+	printf("Juiz entrou na sala.\n");
+	// TO DO
+	// juiz entra na sala.
+	for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
+		sem_post(argumentos->assentar); // libera a entrada de um imigrante para juramento e certificação.
+		sleep(2);
+		sem_post(argumentos->certificado);
 		// TO DO 
-		// juiz confirma e sai da sala.
- 
+		// entrega o certificado
+		printf("Voltando para o check in.\n");
+	}
+	// TO DO 
+	// juiz confirma e sai da sala.
+
 
 }
 
@@ -154,56 +155,56 @@ void* rotina_espectador (void* args) {
 	int pos; // posição onde será inserido o espectador na tela.
 	args_espectador* argumentos = (args_espectador*) args;
 	sem_wait(argumentos->espectadores_fila); // garante que no máximo 5 espectador entra na sala por vez.
-		if (*argumentos->juiz_dentro == 0) {
-			sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
-				switch (*argumentos->num_espectadores)
-				{
-					case 0:
-					// TO DO
-					// inserção do espectador na posição 0
-					printf("Espectador %d entrou.\n", argumentos->indice);
-					sleep(3);
-						pos = 0;
-						break;
-					case 1:
-					// TO DO
-					// inserção do espectador na posição 1
-					printf("Espectador %d entrou.\n", argumentos->indice);
-					sleep(3);
-						pos = 1;
-						break;
-					case 2:
-					// TO DO
-					// inserção do espectador na posição 2
-					printf("Espectador %d entrou.\n", argumentos->indice);
-					sleep(3);
-						pos = 2;
-						break;
-					case 3:
-					// TO DO
-					// inserção do espectador na posição 3
-					printf("Espectador %d entrou.\n", argumentos->indice);
-					sleep(3);
-						pos = 3;
-						break;
-					case 4:
-					// TO DO
-					// inserção do espectador na posição 4
-					printf("Espectador %d entrou.\n", argumentos->indice);
-					sleep(3);
-						pos = 4;
-						break;
-					default:
-						break;
-				}
-				(*argumentos->num_espectadores)++;
-				printf("O número atual de espectadores na sala é %d\n", *argumentos->num_espectadores);
-				sleep(3);
-				sem_post(argumentos->inseri_espectador);
-				// TO DO 
-				// remover o espectador na posição pos. 
-				// colocar tempo de espera.
+	if (*argumentos->juiz_dentro == 0) {
+		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
+		switch (*argumentos->num_espectadores)
+		{
+			case 0:
+			// TO DO
+			// inserção do espectador na posição 0
+			printf("Espectador %d entrou.\n", argumentos->indice);
+			sleep(3);
+				pos = 0;
+				break;
+			case 1:
+			// TO DO
+			// inserção do espectador na posição 1
+			printf("Espectador %d entrou.\n", argumentos->indice);
+			sleep(3);
+				pos = 1;
+				break;
+			case 2:
+			// TO DO
+			// inserção do espectador na posição 2
+			printf("Espectador %d entrou.\n", argumentos->indice);
+			sleep(3);
+				pos = 2;
+				break;
+			case 3:
+			// TO DO
+			// inserção do espectador na posição 3
+			printf("Espectador %d entrou.\n", argumentos->indice);
+			sleep(3);
+				pos = 3;
+				break;
+			case 4:
+			// TO DO
+			// inserção do espectador na posição 4
+			printf("Espectador %d entrou.\n", argumentos->indice);
+			sleep(3);
+				pos = 4;
+				break;
+			default:
+				break;
 		}
+		(*argumentos->num_espectadores)++;
+		printf("O número atual de espectadores na sala é %d\n", *argumentos->num_espectadores);
+		sleep(3);
+		sem_post(argumentos->inseri_espectador);
+		// TO DO 
+		// remover o espectador na posição pos. 
+		// colocar tempo de espera.
+	}
 	sem_post(argumentos->espectadores_fila);
 	(*argumentos->num_espectadores)--;
 	printf("Espectador %d saiu da sala.\n", argumentos->indice);
@@ -218,12 +219,10 @@ void wait_clear(){
 
 //função imprime tela
 void imprime(char** tela){
-	int linha = 35;
-	int coluna = 100;
 	// linha é o tamanho das linhas
 	// coluna é o tamanho das colunas
-	for (int i=0;i<linha;i++){
-		for (int j=0;j<coluna;j++) {
+	for (int i=0;i<LINHAS;i++){
+		for (int j=0;j<COLUNAS;j++) {
 			printf("%c",tela[i][j]);
 		}
 		printf("\n");
@@ -294,8 +293,8 @@ void juiz_confirma(char* mensagem, char* apaga, char** tela) {
 
 void sai_juiz(char** vazio, char** tela) {
 	//posicao (1, 45) tamanho (7, 11) -> juiz
-        insere_texto(1,45, 7, 11, vazio, tela);
-        imprime(tela);
+	insere_texto(1,45, 7, 11, vazio, tela);
+	imprime(tela);
 }
 
 void entra_imigrante(int posfila,char** immigrant, char** tela) {
@@ -308,7 +307,7 @@ void checkin_imigrante(int posfila, int poschekin,char** immigrant, char** vazio
 	//posicao (27, 1)  tamanho (7, 11) -> fila imigrantes 0
 	//posicao (18, 1) tamanho (7, 11) -> checked in 0
 	insere_texto(27,1+12*posfila, 7, 11, vazio, tela);
-	insere_texto(18,1+12*poscheckin, 7, 11, immigrant, tela);
+	insere_texto(18,1+12*poschekin, 7, 11, immigrant, tela);
 	imprime(tela);
 }
 
