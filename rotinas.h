@@ -76,4 +76,4 @@ void juiz_confirma(char* mensagem, char* apaga, char** tela);
 
 void entra_juiz(char** judge,char** tela);
 
-char verifica_posicao(char * fila);
+int verifica_posicao(int * fila);

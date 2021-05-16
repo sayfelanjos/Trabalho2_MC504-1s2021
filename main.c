@@ -88,11 +88,11 @@ int main() {
 
 	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
 
-	char posicao_espectador[5] = {0, 0, 0, 0, 0};
+	int posicao_espectador_fila[5] = {0, 0, 0, 0, 0};
 
-	char posicao_imigrante_fila[5] = {0, 0, 0, 0, 0};
+	int posicao_imigrante_fila[5] = {0, 0, 0, 0, 0};
 
-	char posicao_imigrante_check_in[5] = {0, 0, 0, 0, 0};
+	int posicao_imigrante_check_in[5] = {0, 0, 0, 0, 0};
 
 			//titulo
 	char* titulo[73]= {                                                                                           
@@ -106,7 +106,7 @@ int main() {
 	};
 
 	//fim
-	char* fim[25] = {
+	/*char* fim[25] = {
 		"#######  #     #  ###### ", 
 		"#        ##    #  #     #",
 		"#        # #   #  #     #",
@@ -114,7 +114,7 @@ int main() {
 		"#        #   # #  #     #", 
 		"#        #    ##  #     #", 
 		"#######  #     #  ###### "
-		};
+		};*/
 		
 		//imagem1
 	char* imagem1[100] = { //tela vazia
@@ -194,7 +194,7 @@ int main() {
 	"|__________________________________________________________________________________________________|",	
 	};
 
-	char* imagem3[100] = { //tela cheia
+	/*char* imagem3[100] = { //tela cheia
 	"__________________________________________COURT OF JUSTICE__________________________________________",
 	"|  SWEAR/GET CERTIFICATE:                      Judge                                               |",
 	"|      Immigrant ?                            @@@_@@@                                              |",
@@ -230,7 +230,7 @@ int main() {
 	"|    ||          ||          ||          ||          ||                                            |",
 	"|    LL          LL          LL          LL          LL                                            |",
 	"|__________________________________________________________________________________________________|",
-	};             
+	};*/             
 		
 	char* vazio[11] = {
 	"           ",

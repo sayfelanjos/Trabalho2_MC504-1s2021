@@ -4,9 +4,10 @@
 #include "rotinas.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 void* rotina_imigrante (void *args) {
-	int pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
+	char pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
 	int pos_check_in; // idem pos_fila
 	args_imigrante* argumentos = (args_imigrante*) args;
 	int * valor = malloc(sizeof(int));
@@ -52,21 +53,18 @@ void* rotina_juiz (void* args) {
 }
 
 void* rotina_espectador (void* args) {
-	int pos; // posição onde será inserido o espectador na tela.
 	args_espectador* argumentos = (args_espectador*) args;
 	sem_wait(argumentos->espectadores_fila); // garante que no máximo 5 espectador entra na sala por vez.
 	if (*argumentos->juiz_dentro == 0) {
 		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
-		entra_espectador(*argumentos->num_espectadores, argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
+		entra_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
 		sleep(1);
-		pos = *argumentos->num_espectadores;
-		(*argumentos->num_espectadores)++;
 		sem_post(argumentos->inseri_espectador);
 	}
 	sleep(2);
-	sai_espectador(pos, argumentos->vazio, argumentos->tela);
+	sai_espectador(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->vazio, argumentos->tela);
+	remove_posicao(verifica_posicao(argumentos->posicao_espectador_fila), argumentos->posicao_espectador_fila);
 	sem_post(argumentos->espectadores_fila);
-	(*argumentos->num_espectadores)--;
 }
 
 //função espera e limpa tela
@@ -218,9 +216,16 @@ void sai_espectador(int pos, char** vazio, char** tela) {
     imprime(tela);
 }
 
-char verifica_posicao(char * fila) {
+int verifica_posicao(int * fila) {
 	for (int i = 0; i < 5; i++) {
-		if (fila[i] == 0)
-			return (char) i;
+		if (fila[i] == 0) {
+			fila[i] = 1;
+			return i;
+		}
 	}
+	return -1;
+}
+
+void remove_posicao(char pos, char * fila) {
+	fila[(int)pos] = 0;
 }
