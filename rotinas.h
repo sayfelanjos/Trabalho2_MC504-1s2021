@@ -1,5 +1,5 @@
 #define NUM_IMIGRANTES 10
-#define NUM_ESPECTADORES 100
+#define NUM_ESPECTADORES 20
 #define NUM_VAGAS_IMIGRANTES 5
 #define NUM_VAGAS_ESPECTADORES 5
 #define LINHAS 35
@@ -13,12 +13,14 @@ typedef struct args_imigrante {
 	char **imagem_imigrante;
 	char ** vazio;
 	char ** tela;
-	sem_t* confirm;
+	int* posicao_imigrante_fila;
+	int* posicao_imigrante_check_in;
+	sem_t* sair_sala;
 	sem_t* juiz_na_sala;
 	sem_t* imigrantes;
 	sem_t* inseri_imigrantes_fila;
 	sem_t* inseri_imigrantes_check_in;
-	sem_t* assentar;
+	sem_t* altera_tela;
 	sem_t* check_in;
 	sem_t* certificado;
 } args_imigrante;
@@ -34,6 +36,7 @@ typedef struct args_espectador {
 	sem_t *inseri_espectador;
 	sem_t* juiz_na_sala;
 	sem_t* espectadores_fila;
+	sem_t* altera_tela;
 } args_espectador;
 
 typedef struct args_juiz {
@@ -43,9 +46,10 @@ typedef struct args_juiz {
 	char* mensagem_confirma;
 	char* mensagem_apaga;
 	char ** tela;
-	sem_t* confirm;
+	char** vazio;
+	sem_t* sair_sala;
 	sem_t* juiz_na_sala;
-	sem_t* assentar;
+	sem_t* altera_tela;
 	sem_t* certificado;
 } args_juiz;
 
@@ -55,26 +59,28 @@ void* rotina_juiz (void* parametros);
 
 void* rotina_espectador (void* indice);
 
-void imprime(char** tela);
+void imprime(char** tela, sem_t *altera_tela);
 
 void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela);
 
-void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela);
+void entra_imigrante(int pos_fila,int id,char** imigrante, char** tela, sem_t * altera_tela);
 
-void sai_espectador(int pos, char** vazio, char** tela);
+void sai_espectador(int pos, char** vazio, char** tela, sem_t * altera_tela);
 
-void entra_espectador(int pos, int id,char** espectador, char** tela);
+void entra_espectador(int pos, int id,char** espectador, char** tela, sem_t * altera_tela);
 
-void sai_imigrante(int pos_checkin, char** vazio, char** tela);
+void sai_imigrante_check_in(int pos_fila, int pos_check_in, char** imigrante, char** vazio, char** tela, sem_t *altera_tela);
 
-void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela);
+void sai_imigrante_fila(int pos_fila, char** vazio, char** tela, sem_t * altera_tela);
 
-void checkin_imigrante(int pos_fila, int pos_chekin,int id,char** imigrante, char** vazio, char** tela);
+void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela, sem_t * altera_tela);
 
-void sai_juiz(char** vazio, char** tela);
+void checkin_imigrante(int pos_fila, int pos_chek_in,int id,char** imigrante, char** vazio, char** tela, sem_t * altera_tela);
 
-void juiz_confirma(char* mensagem, char* apaga, char** tela);
+void sai_juiz(char** vazio, char** tela, sem_t * altera_tela);
 
-void entra_juiz(char** judge,char** tela);
+void juiz_confirma(char* mensagem, char* apaga, char** tela, sem_t * altera_tela);
+
+void entra_juiz(char** judge,char** tela, sem_t * altera_tela);
 
 int verifica_posicao(int * fila);

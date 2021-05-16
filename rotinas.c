@@ -5,51 +5,59 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 void* rotina_imigrante (void *args) {
-	char pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
+	int pos_fila; // guarda a posição em que a thread colocou o imigrante na fila para remoção posterior.
 	int pos_check_in; // idem pos_fila
 	args_imigrante* argumentos = (args_imigrante*) args;
-	int * valor = malloc(sizeof(int));
-	sem_getvalue(argumentos->imigrantes, valor);
 	sem_wait(argumentos->imigrantes); // garante que somente 5 imigrantes entrem na fila por vez.
 	sem_wait(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido por vez.
 	if (*argumentos->juiz_dentro == 0) {
-		entra_imigrante(*argumentos->num_imigrantes_fila, argumentos->indice,argumentos->imagem_imigrante, argumentos->tela);
-		sleep(1);
-		pos_fila = *argumentos->num_imigrantes_fila;
-		(*argumentos->num_imigrantes_fila)++;
+		pos_fila = verifica_posicao(argumentos->posicao_imigrante_fila);
+		(*argumentos->num_imigrantes_check_in)++;
+		entra_imigrante(pos_fila, argumentos->indice, argumentos->imagem_imigrante, 
+							argumentos->tela, argumentos->altera_tela);
+		sem_post(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido no check in por vez.		
+		sleep(2);
+		sem_wait(argumentos->check_in); // garante que somente 5 imigrantes façam check-in por vez.
+		sem_wait(argumentos->inseri_imigrantes_check_in);
+		if (*argumentos->juiz_dentro == 0) {
+			pos_check_in = verifica_posicao(argumentos->posicao_imigrante_check_in);
+			checkin_imigrante(pos_fila, pos_check_in ,argumentos->indice, argumentos->imagem_imigrante, 
+								argumentos->vazio, argumentos->tela, argumentos->altera_tela);
+			sem_post(argumentos->inseri_imigrantes_check_in);
+			sem_post(argumentos->juiz_na_sala);
+			sem_wait(argumentos->certificado);
+			pegar_certificado(pos_check_in, argumentos->indice,argumentos->imagem_imigrante, argumentos->vazio, 
+								argumentos->tela, argumentos->altera_tela);
+			sem_wait(argumentos->sair_sala); // libera a inserção de um novo imigrante na fila.
+			pos_fila = verifica_posicao(argumentos->posicao_imigrante_fila);
+			sai_imigrante_check_in(pos_fila, pos_check_in, argumentos->imagem_imigrante, 
+									argumentos->vazio, argumentos->tela, argumentos->altera_tela);
+			sleep(1);
+			sem_post(argumentos->sair_sala);
+		}
+		else {
+			sai_imigrante_fila(pos_fila, argumentos->vazio, argumentos->tela, argumentos->altera_tela);
+		}
 	}
-	sem_post(argumentos->inseri_imigrantes_fila); // garante que somente 1 imigrante seja inserido no check in por vez.		
-	sleep(1);
-	sem_wait(argumentos->check_in); // garante que somente 5 imigrantes façam check-in por vez.
-	sem_wait(argumentos->inseri_imigrantes_check_in);
-	checkin_imigrante(pos_fila, *argumentos->num_imigrantes_check_in ,argumentos->indice, argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
-	pos_check_in = *argumentos->num_imigrantes_check_in;
-	(*argumentos->num_imigrantes_fila)--;
-	sleep(1);
-	(*argumentos->num_imigrantes_check_in)++;
-	sem_post(argumentos->inseri_imigrantes_check_in);
 	sem_post(argumentos->imigrantes); // libera a inserção de um novo imigrante na fila.
-	sem_post(argumentos->juiz_na_sala);
-	sem_wait(argumentos->assentar);
-	sem_wait(argumentos->certificado);
-	pegar_certificado(pos_check_in, argumentos->indice,argumentos->imagem_imigrante, argumentos->vazio, argumentos->tela);
 }
 
 void* rotina_juiz (void* args) {
 	args_juiz* argumentos = (args_juiz*) args;
-	sleep(5);
+	sleep(rand()%10);
 	sem_wait(argumentos->juiz_na_sala);
 	*argumentos->juiz_dentro = 1;
-	entra_juiz(argumentos->imagem_juiz, argumentos->tela);
+	entra_juiz(argumentos->imagem_juiz, argumentos->tela, argumentos->altera_tela);
 	for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
-		sem_post(argumentos->assentar); // libera a entrada de um imigrante para juramento e certificação.
-		sleep(1);
 		sem_post(argumentos->certificado);
-		sleep(1);
 	}
-	juiz_confirma(argumentos->mensagem_confirma, argumentos->mensagem_apaga, argumentos->tela);
+	juiz_confirma(argumentos->mensagem_confirma, argumentos->mensagem_apaga, 
+					argumentos->tela, argumentos->altera_tela);
+	sai_juiz(argumentos->vazio, argumentos->tela, argumentos->altera_tela);
+	sem_post(argumentos->sair_sala);
 }
 
 void* rotina_espectador (void* args) {
@@ -59,15 +67,15 @@ void* rotina_espectador (void* args) {
 	if (*argumentos->juiz_dentro == 0) {
 		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
 		pos = verifica_posicao(argumentos->posicao_espectador_fila);
-		entra_espectador(pos, argumentos->indice,argumentos->imagem_espectador, argumentos->tela);
+		entra_espectador(pos, argumentos->indice,argumentos->imagem_espectador, 
+							argumentos->tela, argumentos->altera_tela);
 		sem_post(argumentos->inseri_espectador);
-		sleep(3);
-		sai_espectador(pos, argumentos->vazio, argumentos->tela);
+		sleep(5);
+		sai_espectador(pos, argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 		remove_posicao(pos, argumentos->posicao_espectador_fila);
 		sleep(1);
-		sem_post(argumentos->espectadores_fila);
 	}
-
+	sem_post(argumentos->espectadores_fila);
 }
 
 //função espera e limpa tela
@@ -78,9 +86,10 @@ void wait_clear(){
 }
 
 //função imprime tela
-void imprime(char** tela){
+void imprime(char** tela, sem_t *altera_tela){
 	// linha é o tamanho das linhas
 	// coluna é o tamanho das colunas
+	sem_wait(altera_tela);
 	wait_clear();
 	for (int i=0;i<LINHAS;i++){
 		for (int j=0;j<COLUNAS;j++) {
@@ -88,6 +97,7 @@ void imprime(char** tela){
 		}
 		printf("\n");
 	}
+	sem_post(altera_tela);
 }
 
 //função insere boneco na tela
@@ -147,76 +157,86 @@ void confirmed(char* mensagem, char** tela){
 	}
 }
 
-void entra_juiz(char** judge,char** tela) {
+void entra_juiz(char** judge,char** tela, sem_t *altera_tela) {
 	//posicao (1, 45) tamanho (7, 13) -> juiz
 	insere_texto(1,45, 7, 13, judge, tela);
-	imprime(tela);
+	imprime(tela, altera_tela);
 }
 
-void juiz_confirma(char* mensagem, char* apaga, char** tela) {
+void juiz_confirma(char* mensagem, char* apaga, char** tela, sem_t *altera_tela) {
 	confirmed(mensagem,tela);
-	imprime(tela);
+	imprime(tela, altera_tela);
 	confirmed(apaga,tela);
-	imprime(tela);
+	imprime(tela, altera_tela);
 }
 
-void sai_juiz(char** vazio, char** tela) {
+void sai_juiz(char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (1, 45) tamanho (7, 13) -> juiz
 	insere_texto(1,45, 7, 13, vazio, tela);
-	imprime(tela);
+	imprime(tela, altera_tela);
 }
 
-void entra_imigrante(int pos_fila,int id,char** immigrante, char** tela) {
+void entra_imigrante(int pos_fila,int id,char** imigrante, char** tela, sem_t *altera_tela) {
 	//posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
-	insere_texto(27,1+14*pos_fila, 7, 13, immigrante, tela);
+	insere_texto(27,1+14*pos_fila, 7, 13, imigrante, tela);
 	atualiza_indice(27, 1+14*pos_fila, id, tela);
-	imprime(tela);
+	imprime(tela, altera_tela);
 }
 
-void checkin_imigrante(int pos_fila, int pos_checkin,int id,char** imigrante, char** vazio, char** tela) {
+void checkin_imigrante(int pos_fila, int pos_check_in,int id,char** imigrante, char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
 	//posicao (18, 1) tamanho (7, 13) -> checked in 0
 	insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
-	insere_texto(18,1+14*pos_checkin, 7, 13, imigrante, tela);
-	atualiza_indice(18, 1+14*pos_checkin, id, tela);
-	imprime(tela);
+	insere_texto(18,1+14*pos_check_in, 7, 13, imigrante, tela);
+	atualiza_indice(18, 1+14*pos_check_in, id, tela);
+	imprime(tela, altera_tela);
 }
 
-void pegar_certificado(int pos_checkin,int id,char**imigrante,char** vazio, char** tela) {
+void pegar_certificado(int pos_check_in,int id,char**imigrante,char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (2,7) tamanho (7,13) -> espaco de certificado
 	//posicao (18, 1) tamanho (7, 13) -> checked in 0
-	insere_texto(18,1+14*pos_checkin, 7, 13, vazio, tela);
+	insere_texto(18,1+14*pos_check_in, 7, 13, vazio, tela);
 	insere_texto(2,7, 7, 13, imigrante, tela);
 	atualiza_indice(2, 7, id, tela);
-	imprime(tela);
-	insere_texto(18,1+14*pos_checkin, 7, 13, imigrante, tela);
-	atualiza_indice(18, 1+14*pos_checkin, id, tela);
+	imprime(tela, altera_tela);
+	insere_texto(18,1+14*pos_check_in, 7, 13, imigrante, tela);
+	atualiza_indice(18, 1+14*pos_check_in, id, tela);
     	insere_texto(2,7, 7, 13, vazio, tela);
-    	imprime(tela);
+    	imprime(tela, altera_tela);
 	
 }
 
-void sai_imigrante(int pos_checkin, char** vazio, char** tela) {
+void sai_imigrante_check_in(int pos_fila, int pos_check_in, char** imigrante, char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (18, 1) tamanho (7, 13) -> checked in 0
-	insere_texto(18,1+14*pos_checkin, 7, 13, vazio, tela);
-	imprime(tela);
+	insere_texto(18,1+14*pos_check_in, 7, 13, vazio, tela);
+	imprime(tela, altera_tela);
+	insere_texto(27,1+14*pos_fila, 7, 13, imigrante, tela);
+	imprime(tela, altera_tela);
+	sleep(1);
+	insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
+	imprime(tela, altera_tela);
 }
 
-void entra_espectador(int pos, int id,char** espectator, char** tela) {
+void sai_imigrante_fila(int pos_fila, char** vazio, char** tela, sem_t * altera_tela) {
+	insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
+	imprime(tela, altera_tela);
+}
+
+void entra_espectador(int pos, int id,char** espectator, char** tela, sem_t *altera_tela) {
 	//posicao (10, 88) tamanho (7, 13) -> espectador 0
-	insere_texto(10,88-14*pos, 7, 13, espectator, tela);
-	atualiza_indice(10, 88-14*pos, id, tela);
-	imprime(tela);
+	insere_texto(10,85-14*pos, 7, 13, espectator, tela);
+	atualiza_indice(10, 85-14*pos, id, tela);
+	imprime(tela, altera_tela);
 }
 
 void espectar(int tempo) {
 	sleep(tempo);
 }
 
-void sai_espectador(int pos, char** vazio, char** tela) {
+void sai_espectador(int pos, char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (10, 88) tamanho (7, 13) -> espectador 0
-    insere_texto(10,88-14*pos, 7, 13, vazio, tela);
-    imprime(tela);
+    insere_texto(10,85-14*pos, 7, 13, vazio, tela);
+    imprime(tela, altera_tela);
 }
 
 int verifica_posicao(int * fila) {
@@ -229,6 +249,6 @@ int verifica_posicao(int * fila) {
 	return -1;
 }
 
-void remove_posicao(int pos, char * fila) {
+void remove_posicao(int pos, int * fila) {
 	fila[pos] = 0;
 }

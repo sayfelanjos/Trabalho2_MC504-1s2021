@@ -4,7 +4,7 @@
 #include "rotinas.h"
 #include <stdlib.h>
 
-sem_t confirm; //semaforo que indica que o juiz ja confirmou
+sem_t sair_sala; //semaforo que indica que o juiz ja confirmou
 
 sem_t juiz_na_sala; // semaforo que indica que o juiz saiu do predio
 
@@ -28,6 +28,8 @@ sem_t inseri_imigrantes_fila;
 
 sem_t inseri_imigrantes_check_in;
 
+
+
 int main() {
 
 	system("clear");
@@ -40,7 +42,7 @@ int main() {
 
 	sem_init(&inseri_imigrantes,0,1);
 
-	sem_init(&confirm,0,1); 
+	sem_init(&sair_sala,0,0); 
 
 	sem_init(&juiz_na_sala,0,0); // sinaliza quando o juiz está na sala.
 
@@ -64,6 +66,7 @@ int main() {
 	//INICIO CRIA ESTRUTURAS AUXILIARES -----------------------------------
 	
 	//Aloca tela[35][100]
+
 	char** tela;
 	tela = malloc(LINHAS*sizeof(char*));
 	for (int i=0;i<LINHAS;i++) {
@@ -299,15 +302,19 @@ int main() {
 			args_imigrantes[i].imagem_imigrante = imagem_imigrante;
 			args_imigrantes[i].vazio = vazio;
 			args_imigrantes[i].tela = tela;
-			args_imigrantes[i].confirm = &confirm;
+			args_imigrantes[i].posicao_imigrante_fila = posicao_imigrante_fila;
+			args_imigrantes[i].posicao_imigrante_check_in = posicao_imigrante_check_in;
+			args_imigrantes[i].sair_sala = &sair_sala;
 			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
 			args_imigrantes[i].imigrantes = &imigrantes_fila;
 			args_imigrantes[i].inseri_imigrantes_fila = &inseri_imigrantes_fila;	
 			args_imigrantes[i].inseri_imigrantes_check_in = &inseri_imigrantes_check_in;
-			args_imigrantes[i].assentar = &assentar;	 
+			args_imigrantes[i].altera_tela = &altera_tela;	 
 			args_imigrantes[i].check_in = &imigrantes_check_in;
 			args_imigrantes[i].certificado = &certificado;
 			indice_imigrantes++;
+			if (indice_imigrantes > 99)
+				indice_imigrantes = 0;
 		}
 		for (int i=0; i<NUM_ESPECTADORES; i++) {
 			args_espectadores[i].indice = indice_espectadores;
@@ -320,7 +327,10 @@ int main() {
 			args_espectadores[i].inseri_espectador = &inseri_espectador;
 			args_espectadores[i].juiz_na_sala = &juiz_na_sala;
 			args_espectadores[i].espectadores_fila = &espectadores_fila;
+			args_espectadores[i].altera_tela = &altera_tela;
 			indice_espectadores++;
+			if (indice_espectadores > 99)
+				indice_espectadores = 0;
 		}
 		arg_juiz.juiz_dentro = &juiz_dentro;
 		arg_juiz.num_imigrantes_check_in = &num_imigrantes_check_in;
@@ -328,9 +338,10 @@ int main() {
 		arg_juiz.mensagem_confirma = mensagem;
 		arg_juiz.mensagem_apaga = apaga;
 		arg_juiz.tela = tela;
-		arg_juiz.confirm = &confirm;
+		arg_juiz.vazio = vazio;
+		arg_juiz.sair_sala = &sair_sala;
 		arg_juiz.juiz_na_sala = &juiz_na_sala;
-		arg_juiz.assentar = &assentar;
+		arg_juiz.altera_tela = &altera_tela;
 		arg_juiz.certificado = &certificado;
 
 		// FIM CRIA PARAMETROS THREADS -----------------------------------------
@@ -342,28 +353,28 @@ int main() {
    		// insere titulo
     	insere_texto(12, 15, 7, 73, titulo, tela);
         //imprime titulo
-        imprime(tela);
+        imprime(tela, &altera_tela);
 
     	// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere immigrant
     	insere_texto(12, 42, 7, 11, imagem_imigrante, tela);        
     	// imprime immigrant
-		imprime(tela);
+		imprime(tela, &altera_tela);
 
         // Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
   		// insere spectator
     	insere_texto(12, 42, 7, 11, imagem_espectador, tela);        
     	// imprime spectator
-        imprime(tela);
+        imprime(tela, &altera_tela);
 
 		// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere judge
     	insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
     	// imprime judge
-        imprime(tela);
+        imprime(tela, &altera_tela);
 		// Esvazio a tela
 		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
 
@@ -371,39 +382,37 @@ int main() {
 
 		// INICIO CRIA THREADS ---------------------------------------------------
 
-		// if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
-		// 	perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
-		// }
-		// for (int i=0;i<NUM_IMIGRANTES;i++) {
-		// 	if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
-		// 		perror("Erro na criacao da thread do imigrante.\n"); 
-		// 	}
-		// 	// sleep(2);
-		// }
+		if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
+			perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
+		}
+		for (int i=0;i<NUM_IMIGRANTES;i++) {
+			if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
+				perror("Erro na criacao da thread do imigrante.\n"); 
+			}
+			// sleep(2);
+		}
 		for (int i=0; i<NUM_ESPECTADORES;i++) {
 			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
 				perror("Erro na criacao da thread do espectador."); 
 			}
 		}
-		// for (int i=0; i < NUM_IMIGRANTES; i++) {
-		// 	if (pthread_join(imigrantes[i], NULL) != 0) {
-		// 		perror("Falha em join imigrantes.");
-		// 	}
-		// }
+		for (int i=0; i < NUM_IMIGRANTES; i++) {
+			if (pthread_join(imigrantes[i], NULL) != 0) {
+				perror("Falha em join imigrantes.");
+			}
+		}
 		for (int i=0; i < NUM_ESPECTADORES; i++) {
 			if (pthread_join(espectadores[i], NULL) != 0) {
 				perror("Falha em join espectadores.");
 			}
 		}
-	// 	if (pthread_join(juiz, NULL) != 0) {
-	// 		perror("Falha em join juiz.");
-	// 	}
+		if (pthread_join(juiz, NULL) != 0) {
+			perror("Falha em join juiz.");
+		}
 	}
 
-    	// FIM CRIA THREADS ---------------------------------------------------
-
-	for (int i=0; i <LINHAS; i++)
-  		free (tela[i]) ;
+    // FIM CRIA THREADS ----------
+	
 	free (tela) ;
 
 	return 0;
