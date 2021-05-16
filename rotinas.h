@@ -10,6 +10,9 @@ typedef struct args_imigrante {
 	int *num_imigrantes_check_in;
 	int *num_imigrantes_fila;
 	int *juiz_dentro;
+	char **imagem_imigrante;
+	char ** vazio;
+	char ** tela;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
 	sem_t* imigrantes;
@@ -24,6 +27,9 @@ typedef struct args_espectador {
 	int indice;
 	int *num_espectadores;
 	int *juiz_dentro;
+	char** imagem_espectador;
+	char** vazio;
+	char** tela;
 	sem_t *inseri_espectador;
 	sem_t* juiz_na_sala;
 	sem_t* espectadores_fila;
@@ -32,6 +38,10 @@ typedef struct args_espectador {
 typedef struct args_juiz {
 	int* juiz_dentro;
 	int* num_imigrantes_check_in;
+	char ** imagem_juiz;
+	char** mensagem_confirma;
+	char** mensagem_apaga;
+	char ** tela;
 	sem_t* confirm;
 	sem_t* juiz_na_sala;
 	sem_t* assentar;
@@ -47,3 +57,23 @@ void* rotina_espectador (void* indice);
 void imprime(char** tela);
 
 void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela);
+
+void entra_imigrante(int pos_fila,char** immigrante, char** tela);
+
+void sai_espectador(int pos, char** vazio, char** tela);
+
+void entra_espectador(int pos, char** espectator, char** tela);
+
+void sai_imigrante(int pos_checkin, char** vazio, char** tela);
+
+void pegar_certificado(int pos_checkin,char**imigrante,char** vazio, char** tela);
+
+void checkin_imigrante(int pos_fila, int pos_chekin,char** imigrante, char** vazio, char** tela);
+
+void sai_juiz(char** vazio, char** tela);
+
+void juiz_confirma(char* mensagem, char* apaga, char** tela);
+
+void entra_juiz(char** judge,char** tela);
+
+char verifica_posicao(char * fila);

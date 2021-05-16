@@ -80,13 +80,19 @@ int main() {
 
 	int indice_espectadores = 0; // índice inicial das threads
 
-	int juiz_dentro = 0; // 0 se o juiz está fora e 1 caso contrário.
+	int juiz_dentro; // 0 se o juiz está fora e 1 caso contrário.
 
-	int num_espectadores = 0; // número de espectadores
+	int num_espectadores; // número de espectadores
 
-	int num_imigrantes_fila = 0; // número de imigrantes na fila 
+	int num_imigrantes_fila; // número de imigrantes na fila 
 
-	int num_imigrantes_check_in = 0; // número de imigrantes fazendo check-in
+	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
+
+	char posicao_espectador[5] = {0, 0, 0, 0, 0};
+
+	char posicao_imigrante_fila[5] = {0, 0, 0, 0, 0};
+
+	char posicao_imigrante_check_in[5] = {0, 0, 0, 0, 0};
 
 			//titulo
 	char* titulo[73]= {                                                                                           
@@ -151,9 +157,9 @@ int main() {
 
 		//imagem2
 	char* imagem2[100] = { //tela somente com mensagens
-	"___________________________0x7fffffffc688_______________COURT OF JUSTICE__________________________________________",
+	"__________________________________________COURT OF JUSTICE__________________________________________",
 	"|  SWEAR/GET CERTIFICATE:                                                                          |",
-	"|                               args_juiz                                                                   |",
+	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
@@ -194,7 +200,7 @@ int main() {
 	"|      Immigrant ?                            @@@_@@@                                              |",
 	"|         (^^)                               @@@/ \\@@@                                             |",
 	"|        / || \\                              @@\\O O/@@                                             |",
-	"|       c  xx  c              args_juiz               @@@\\-/@@@                                             |",
+	"|       c  xx  c                             @@@\\-/@@@                                             |",
 	"|          ||                                @@@/ \\@@@                                             |",
 	"|          ||                                  /\\|/\\                                               |",
 	"|          LL                                                                                      |",
@@ -236,21 +242,18 @@ int main() {
 	"           ",
 	};
 
-	char* immigrant[11] = {	
+	char *imagem_imigrante[11] = {	
 	"Immigrant ?",
 	"   (^^)    ",
 	"  / || \\   ",
 	" c  xx  c  ",
 	"    ||     ",
-	"    ||     ", 		// juiz_dentro = 0;
-		// num_espectadores = 0;
-		// num_imigrantes_fila = 0;
-		// num_imigrantes_check_in = 0;
+	"    ||     ", 		
 	"    LL     ",
 	};
 
-	char* spectator[11] = {  
-	"Spectator ?",
+	char* imagem_espectador[11] = {  
+	"Espectador ?",
 	"   (00)    ",
 	"  / || \\   ",
 	" c  xx  c  ",
@@ -259,8 +262,8 @@ int main() {
 	"    LL     ",
 	};
 		
-	char* judge[11] = {  
-	"   Judge   ",
+	char* imagem_juiz[11] = {  
+	"   Juiz   ",
 	"  @@@_@@@  ",
 	" @@@/ \\@@@ ",
 	" @@\\O O/@@ ",
@@ -281,10 +284,10 @@ int main() {
 	pthread_t juiz; //thread para o juiz
 	
 	while(1) {
-		// juiz_dentro = 0;
-		// num_espectadores = 0;
-		// num_imigrantes_fila = 0;
-		// num_imigrantes_check_in = 0;
+		juiz_dentro = 0;
+		num_espectadores = 0;
+		num_imigrantes_fila = 0;
+		num_imigrantes_check_in = 0;
 
 		//INICIO CRIA PARAMETROS THREADS --------------------------------------
 	
@@ -293,6 +296,9 @@ int main() {
 			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
 			args_imigrantes[i].num_imigrantes_fila = &num_imigrantes_fila;
 			args_imigrantes[i].juiz_dentro = &juiz_dentro;
+			args_imigrantes[i].imagem_imigrante = imagem_imigrante;
+			args_imigrantes[i].vazio = vazio;
+			args_imigrantes[i].tela = tela;
 			args_imigrantes[i].confirm = &confirm;
 			args_imigrantes[i].juiz_na_sala = &juiz_na_sala;
 			args_imigrantes[i].imigrantes = &imigrantes_fila;
@@ -304,6 +310,9 @@ int main() {
 			args_espectadores[i].indice = indice_espectadores;
 			args_espectadores[i].num_espectadores = &num_espectadores;
 			args_espectadores[i].juiz_dentro = &juiz_dentro;
+			args_espectadores[i].imagem_espectador = imagem_espectador;
+			args_espectadores[i].vazio = vazio;
+			args_espectadores[i].tela = tela;
 			args_espectadores[i].inseri_espectador = &inseri_espectador;
 			args_espectadores[i].juiz_na_sala = &juiz_na_sala;
 			args_espectadores[i].espectadores_fila = &espectadores_fila;
@@ -312,6 +321,10 @@ int main() {
 		}
 		arg_juiz.juiz_dentro = &juiz_dentro;
 		arg_juiz.num_imigrantes_check_in = &num_imigrantes_check_in;
+		arg_juiz.imagem_juiz = imagem_juiz;
+		arg_juiz.mensagem_confirma = mensagem;
+		arg_juiz.mensagem_apaga = apaga;
+		arg_juiz.tela = tela;
 		arg_juiz.confirm = &confirm;
 		arg_juiz.juiz_na_sala = &juiz_na_sala;
 		arg_juiz.assentar = &assentar;
@@ -331,23 +344,25 @@ int main() {
     	// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere immigrant
-    	insere_texto(12, 42, 7, 11, immigrant, tela);        
+    	insere_texto(12, 42, 7, 11, imagem_imigrante, tela);        
     	// imprime immigrant
 		imprime(tela);
 
         // Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
   		// insere spectator
-    	insere_texto(12, 42, 7, 11, spectator, tela);        
+    	insere_texto(12, 42, 7, 11, imagem_espectador, tela);        
     	// imprime spectator
         imprime(tela);
 
 		// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere judge
-    	insere_texto(12, 42, 7, 11, judge, tela);        
+    	insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
     	// imprime judge
         imprime(tela);
+		// Esvazio a tela
+		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
 
 		// FIM IMPRIMIR IMAGENS DE INTRODUCAO --------------------------
 
@@ -356,22 +371,22 @@ int main() {
 		if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
 			perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
 		}
-		for (int i=0;i<NUM_IMIGRANTES;i++) {
-			if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
-				perror("Erro na criacao da thread do imigrante.\n"); 
-			}
-			// sleep(2);
-		}
+		// for (int i=0;i<NUM_IMIGRANTES;i++) {
+		// 	if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
+		// 		perror("Erro na criacao da thread do imigrante.\n"); 
+		// 	}
+		// 	// sleep(2);
+		// }
 		for (int i=0; i<NUM_ESPECTADORES;i++) {
 			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
 				perror("Erro na criacao da thread do espectador."); 
 			}
 		}
-		for (int i=0; i < NUM_IMIGRANTES; i++) {
-			if (pthread_join(imigrantes[i], NULL) != 0) {
-				perror("Falha em join imigrantes.");
-			}
-		}
+		// for (int i=0; i < NUM_IMIGRANTES; i++) {
+		// 	if (pthread_join(imigrantes[i], NULL) != 0) {
+		// 		perror("Falha em join imigrantes.");
+		// 	}
+		// }
 		for (int i=0; i < NUM_ESPECTADORES; i++) {
 			if (pthread_join(espectadores[i], NULL) != 0) {
 				perror("Falha em join espectadores.");
