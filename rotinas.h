@@ -1,5 +1,5 @@
 #define NUM_IMIGRANTES 10
-#define NUM_ESPECTADORES 20
+#define NUM_ESPECTADORES 10
 #define NUM_VAGAS_IMIGRANTES 5
 #define NUM_VAGAS_ESPECTADORES 5
 #define LINHAS 35
@@ -22,7 +22,8 @@ typedef struct args_imigrante {
 	sem_t* inseri_imigrantes_check_in;
 	sem_t* altera_tela;
 	sem_t* check_in;
-	sem_t* certificado;
+	sem_t* pega_certificado;
+	sem_t* pegou_certificado;
 } args_imigrante;
 
 typedef struct args_espectador {
@@ -50,14 +51,15 @@ typedef struct args_juiz {
 	sem_t* sair_sala;
 	sem_t* juiz_na_sala;
 	sem_t* altera_tela;
-	sem_t* certificado;
+	sem_t* pega_certificado;
+	sem_t* pegou_certificado;
 } args_juiz;
 
-void* rotina_imigrante (void* indice);
+void* rotina_imigrante (void* args);
 
-void* rotina_juiz (void* parametros);
+void* rotina_juiz (void* args);
 
-void* rotina_espectador (void* indice);
+void* rotina_espectador (void* args);
 
 void imprime(char** tela, sem_t *altera_tela);
 
@@ -69,7 +71,7 @@ void sai_espectador(int pos, char** vazio, char** tela, sem_t * altera_tela);
 
 void entra_espectador(int pos, int id,char** espectador, char** tela, sem_t * altera_tela);
 
-void sai_imigrante_check_in(int pos_fila, int pos_check_in, char** imigrante, char** vazio, char** tela, sem_t *altera_tela);
+void sai_imigrante_check_in(int pos_fila, int id, int pos_check_in, char** imigrante, char** vazio, char** tela, sem_t *altera_tela);
 
 void sai_imigrante_fila(int pos_fila, char** vazio, char** tela, sem_t * altera_tela);
 
@@ -84,3 +86,5 @@ void juiz_confirma(char* mensagem, char* apaga, char** tela, sem_t * altera_tela
 void entra_juiz(char** judge,char** tela, sem_t * altera_tela);
 
 int verifica_posicao(int * fila);
+
+void remove_posicao(int pos, int * fila);

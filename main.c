@@ -3,6 +3,7 @@
 #include <semaphore.h>
 #include "rotinas.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 sem_t sair_sala; //semaforo que indica que o juiz ja confirmou
 
@@ -16,7 +17,7 @@ sem_t assentar; // permite que somente um imigrante se assente por vez para cert
 
 sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
 
-sem_t certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
+sem_t pega_certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
 
 sem_t inseri_espectador;
 
@@ -28,6 +29,7 @@ sem_t inseri_imigrantes_fila;
 
 sem_t inseri_imigrantes_check_in;
 
+sem_t pegou_certificado;
 
 
 int main() {
@@ -35,6 +37,8 @@ int main() {
 	system("clear");
 
 	// INICIO CRIA SEMAFOROS ----------------------------------------------
+
+	sem_init(&pegou_certificado,0,0);
 
 	sem_init(&inseri_imigrantes_check_in,0,1);
 
@@ -58,7 +62,7 @@ int main() {
 
 	sem_init(&altera_tela,0,1); // limita a uma thread por vez a alteração da tela.
 
-	sem_init(&certificado,0,0);
+	sem_init(&pega_certificado,0,0);
 
 
 	//FIM CRIA SEMAFOROS -------------------------------------------------- 	
@@ -311,7 +315,8 @@ int main() {
 			args_imigrantes[i].inseri_imigrantes_check_in = &inseri_imigrantes_check_in;
 			args_imigrantes[i].altera_tela = &altera_tela;	 
 			args_imigrantes[i].check_in = &imigrantes_check_in;
-			args_imigrantes[i].certificado = &certificado;
+			args_imigrantes[i].pega_certificado = &pega_certificado;
+			args_imigrantes[i].pegou_certificado = &pegou_certificado;
 			indice_imigrantes++;
 			if (indice_imigrantes > 99)
 				indice_imigrantes = 0;
@@ -342,7 +347,8 @@ int main() {
 		arg_juiz.sair_sala = &sair_sala;
 		arg_juiz.juiz_na_sala = &juiz_na_sala;
 		arg_juiz.altera_tela = &altera_tela;
-		arg_juiz.certificado = &certificado;
+		arg_juiz.pega_certificado = &pega_certificado;
+		arg_juiz.pegou_certificado = &pegou_certificado;
 
 		// FIM CRIA PARAMETROS THREADS -----------------------------------------
 
@@ -354,27 +360,28 @@ int main() {
     	insere_texto(12, 15, 7, 73, titulo, tela);
         //imprime titulo
         imprime(tela, &altera_tela);
-
+		sleep(1);		
     	// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere immigrant
     	insere_texto(12, 42, 7, 11, imagem_imigrante, tela);        
     	// imprime immigrant
 		imprime(tela, &altera_tela);
-
+		sleep(1);
         // Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
   		// insere spectator
     	insere_texto(12, 42, 7, 11, imagem_espectador, tela);        
     	// imprime spectator
         imprime(tela, &altera_tela);
-
+		sleep(1);
 		// Esvazia a tela
     	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
     	// insere judge
     	insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
     	// imprime judge
         imprime(tela, &altera_tela);
+		sleep(1);
 		// Esvazio a tela
 		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
 
