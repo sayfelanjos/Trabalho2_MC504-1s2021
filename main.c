@@ -19,17 +19,17 @@ sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o
 
 sem_t pega_certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
 
-sem_t inseri_espectador;
+sem_t inseri_espectador; // semaforo que controla o acesso das threads de espectadores a tela
 
 sem_t altera_tela;
 
-sem_t inseri_imigrantes;
+sem_t inseri_imigrantes; // semaforo que controla o acesso das threads de imigrantes a tela
 
-sem_t inseri_imigrantes_fila;
+sem_t inseri_imigrantes_fila; //semaforo que controla o acesso das threads de imigrantes a tela;
 
-sem_t inseri_imigrantes_check_in;
+sem_t inseri_imigrantes_check_in; // semaforo que controla o acesso das threads imigrantes a tela;
 
-sem_t pegou_certificado;
+sem_t pegou_certificado; // semaforo que controla o numero de imigrantes que pegou o certificado
 
 
 int main() {
@@ -38,15 +38,15 @@ int main() {
 
 	// INICIO CRIA SEMAFOROS ----------------------------------------------
 
-	sem_init(&pegou_certificado,0,0);
+	sem_init(&pegou_certificado,0,0); // inicializa o semaforo com valor 0
 
-	sem_init(&inseri_imigrantes_check_in,0,1);
+	sem_init(&inseri_imigrantes_check_in,0,1); // inicializa o semaforo com valor 1
 
-	sem_init(&inseri_imigrantes_fila,0,1);
+	sem_init(&inseri_imigrantes_fila,0,1); // inicializa o semaforo com valor 1
 
-	sem_init(&inseri_imigrantes,0,1);
+	sem_init(&inseri_imigrantes,0,1); // inicializa o semaforo com valor 1
 
-	sem_init(&sair_sala,0,0); 
+	sem_init(&sair_sala,0,0); // inicializa o semaforo com valor 1
 
 	sem_init(&juiz_na_sala,0,0); // sinaliza quando o juiz está na sala.
 
@@ -54,7 +54,7 @@ int main() {
 
 	sem_init(&imigrantes_fila,0,5); // limita a quantidade de espectadores na fila em 5.
 
-	sem_init(&assentar,0,0);
+	sem_init(&assentar,0,0); // inicializa o semaforo com valor 0
 
 	sem_init(&imigrantes_check_in,0,5); // limita a quantidade de imigrantes fazendo check_in em 5.
 
@@ -62,7 +62,7 @@ int main() {
 
 	sem_init(&altera_tela,0,1); // limita a uma thread por vez a alteração da tela.
 
-	sem_init(&pega_certificado,0,0);
+	sem_init(&pega_certificado,0,0); // inicializa o semaforo com valor 0
 
 
 	//FIM CRIA SEMAFOROS -------------------------------------------------- 	
@@ -77,11 +77,11 @@ int main() {
 		tela[i] = malloc(COLUNAS*sizeof(char));
 	}
 
-	args_imigrante args_imigrantes[NUM_IMIGRANTES];
+	args_imigrante args_imigrantes[NUM_IMIGRANTES]; // vetor que armazena as estruturas de parametros para as threads dos imigrantes
 
-	args_espectador args_espectadores[NUM_ESPECTADORES];
+	args_espectador args_espectadores[NUM_ESPECTADORES]; // vetor que armazena as estruturas de parametros para as threads dos espectadores
 
-	args_juiz arg_juiz;
+	args_juiz arg_juiz; // estrutura que armazena os parametros para a thread do juiz
 
 	int indice_imigrantes = 0; // índice inicial das threads
 
@@ -95,13 +95,19 @@ int main() {
 
 	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
 
-	int posicao_espectador_fila[5] = {0, 0, 0, 0, 0};
+	int posicao_espectador_fila[5] = {0, 0, 0, 0, 0}; // vetor que armazena a situacao de cada posicao na fila de espectadores 
+	// 0 -> posicao vazia
+	// 1 -> posicao ocupada
 
-	int posicao_imigrante_fila[5] = {0, 0, 0, 0, 0};
+	int posicao_imigrante_fila[5] = {0, 0, 0, 0, 0}; // vetor que armazena a situacao de cada posicao na fila de imigrantes
+	// 0 -> posicao vazia
+	// 1 -> posicao ocupada
 
-	int posicao_imigrante_check_in[5] = {0, 0, 0, 0, 0};
+	int posicao_imigrante_check_in[5] = {0, 0, 0, 0, 0}; // vetor que armazena a situacao de cada posicao no check in
+	// 0 -> posicao vazia
+	// 1 -> posicao ocupada
 
-			//titulo
+	//titulo
 	char* titulo[73]= {                                                                                           
 	"  #####                                    #####                         ", 
 	" #     #  #####   ######  ######  #    #  #     #    ##    #####   ##### ",
@@ -123,7 +129,7 @@ int main() {
 		"#######  #     #  ###### "
 		};*/
 		
-		//imagem1
+	//imagem1
 	char* imagem1[100] = { //tela vazia
 	"____________________________________________________________________________________________________",
 	"|                                                                                                  |",
@@ -162,7 +168,7 @@ int main() {
 	"|__________________________________________________________________________________________________|",	
 	};             
 
-		//imagem2
+	//imagem2
 	char* imagem2[100] = { //tela somente com mensagens
 	"__________________________________________COURT OF JUSTICE__________________________________________",
 	"|  SWEAR/GET CERTIFICATE:                                                                          |",
@@ -239,7 +245,7 @@ int main() {
 	"|__________________________________________________________________________________________________|",
 	};*/             
 		
-	char* vazio[13] = {
+	char* vazio[13] = { // matriz usada para apagar bonequinhos da tela 
 	"             ",
 	"             ",
 	"             ",
@@ -249,7 +255,7 @@ int main() {
 	"             ",
 	};
 
-	char *imagem_imigrante[13] = {	
+	char *imagem_imigrante[13] = {	// matriz usada para inserir bonequinhos na tela
 	"Imigrante  ??",
 	"   (^^)      ",
 	"  / || \\     ",
@@ -259,7 +265,7 @@ int main() {
 	"    LL       ",
 	};
 
-	char* imagem_espectador[13] = {  
+	char* imagem_espectador[13] = {  //matriz usada para inserir bonequinhos na tela
 	"Espectador ??",
 	"   (00)      ",
 	"  / || \\     ",
@@ -269,7 +275,7 @@ int main() {
 	"    LL       ",
 	};
 		
-	char* imagem_juiz[13] = {  
+	char* imagem_juiz[13] = {  //matriz usada para inserir bonequinhos na tela
 	"   Juiz      ",
 	"  @@@_@@@    ",
 	" @@@/ \\@@@   ",
@@ -279,12 +285,13 @@ int main() {
 	"   /\\|/\\     ",
 	}; 
 		
-	char mensagem[16] = "\"confirmed!\" <--";
-	char apaga[16]    = "                ";
+	char mensagem[16] = "\"confirmed!\" <--"; //vetor com a mensagem de confirmado
+	char apaga[16]    = "                "; // vetor que apaga a mensagem de confirmado
 
 	// FIM CRIA ESTRUTURAS AUXILIARES --------------------------------------
 	
 	// INICIO CRIA THREADS ------------------------------------------------
+
 
 	pthread_t imigrantes[NUM_IMIGRANTES]; //threads para os imigrantes
 	pthread_t espectadores[NUM_ESPECTADORES]; //threads para os espectadores
@@ -296,8 +303,10 @@ int main() {
 		num_imigrantes_fila = 0;
 		num_imigrantes_check_in = 0;
 
-		//INICIO CRIA PARAMETROS THREADS --------------------------------------
-	
+		//INICIO CRIA PARAMETROS THREADS ------------------------------
+		
+		
+		//INICIO CRIA PARAMETROS IMIGRANTES ---------------------------
 		for (int i=0;i<NUM_IMIGRANTES;i++) {
 			args_imigrantes[i].indice = indice_imigrantes;
 			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
@@ -321,6 +330,10 @@ int main() {
 			if (indice_imigrantes > 99)
 				indice_imigrantes = 0;
 		}
+		// FIM CRIA PARAMETROS IMIGRANTES -----------------------------
+		
+
+		// INICIO CRIA PARAMETROS ESPECTADORES ------------------------
 		for (int i=0; i<NUM_ESPECTADORES; i++) {
 			args_espectadores[i].indice = indice_espectadores;
 			args_espectadores[i].num_espectadores = &num_espectadores;
@@ -337,6 +350,10 @@ int main() {
 			if (indice_espectadores > 99)
 				indice_espectadores = 0;
 		}
+		// FIM CRIA PARAMETROS ESPECTADORES ---------------------------
+
+
+		// INICIO CRIA PARAMETROS JUIZ --------------------------------
 		arg_juiz.juiz_dentro = &juiz_dentro;
 		arg_juiz.num_imigrantes_check_in = &num_imigrantes_check_in;
 		arg_juiz.imagem_juiz = imagem_juiz;
@@ -349,73 +366,100 @@ int main() {
 		arg_juiz.altera_tela = &altera_tela;
 		arg_juiz.pega_certificado = &pega_certificado;
 		arg_juiz.pegou_certificado = &pegou_certificado;
+		// FIM CRIA PARAMETROS JUIZ -----------------------------------
 
-		// FIM CRIA PARAMETROS THREADS -----------------------------------------
 
-		// INICIO IMPRIMIR IMAGENS DE INTRODUCAO -----------------------
+		// FIM CRIA PARAMETROS THREADS --------------------------------
+
+
+		// INICIO IMPRIMIR IMAGENS DE INTRODUCAO ----------------------
 
 		// Esvazia a tela
-    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    		insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
    		// insere titulo
-    	insere_texto(12, 15, 7, 73, titulo, tela);
-        //imprime titulo
-        imprime(tela, &altera_tela);
+    		insere_texto(12, 15, 7, 73, titulo, tela);
+        	//imprime titulo
+        	imprime(tela, &altera_tela);
 		sleep(1);		
-    	// Esvazia a tela
-    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
-    	// insere immigrant
-    	insere_texto(12, 42, 7, 11, imagem_imigrante, tela);        
-    	// imprime immigrant
+    		// Esvazia a tela
+    		insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    		// insere immigrant
+    		insere_texto(12, 42, 7, 11, imagem_imigrante, tela);        
+    		// imprime immigrant
 		imprime(tela, &altera_tela);
 		sleep(1);
-        // Esvazia a tela
-    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+        	// Esvazia a tela
+    		insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
   		// insere spectator
-    	insere_texto(12, 42, 7, 11, imagem_espectador, tela);        
-    	// imprime spectator
-        imprime(tela, &altera_tela);
+   	 	insere_texto(12, 42, 7, 11, imagem_espectador, tela);        
+   	 	// imprime spectator
+	   	imprime(tela, &altera_tela);
 		sleep(1);
 		// Esvazia a tela
-    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
-    	// insere judge
-    	insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
-    	// imprime judge
-        imprime(tela, &altera_tela);
+    		insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    		// insere judge
+    		insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
+    		// imprime judge
+        	imprime(tela, &altera_tela);
 		sleep(1);
 		// Esvazio a tela
 		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
 
 		// FIM IMPRIMIR IMAGENS DE INTRODUCAO --------------------------
 
-		// INICIO CRIA THREADS ---------------------------------------------------
+		// INICIO CRIA THREADS ----------------------------------------
 
+
+		// INICIO CRIA THREAD JUIZ ------------------------------------
 		if (pthread_create(&juiz,NULL,rotina_juiz, &arg_juiz) != 0) { // cria a thread do juiz
 			perror("Erro na criacao da thread do juiz.\n"); //testa se ocorreu um erro na criacao da thread do juiz
 		}
+		// FIM CRIA THREAD JUIZ ---------------------------------------
+		
+
+		// INICIO CRIA THREADS IMIGRANTES -----------------------------
 		for (int i=0;i<NUM_IMIGRANTES;i++) {
 			if (pthread_create(&imigrantes[i],NULL,rotina_imigrante, &args_imigrantes[i]) != 0) { // cria a thread do imigrante i
 				perror("Erro na criacao da thread do imigrante.\n"); 
 			}
-			// sleep(2);
 		}
+		// FIM CRIA THREADS IMIGRANTES --------------------------------
+
+
+		// INICIO CRIA THREADS ESPECTADORES ---------------------------
 		for (int i=0; i<NUM_ESPECTADORES;i++) {
 			if (pthread_create(&espectadores[i],NULL,rotina_espectador, &args_espectadores[i]) != 0) { // cria a threads do espectador i
 				perror("Erro na criacao da thread do espectador."); 
 			}
 		}
+		// FIM CRIA THREADS ESPECTADORES ------------------------------
+	
+		
+		// INICIO JOINA THREADS IMIGRANTES ----------------------------
 		for (int i=0; i < NUM_IMIGRANTES; i++) {
 			if (pthread_join(imigrantes[i], NULL) != 0) {
 				perror("Falha em join imigrantes.");
 			}
 		}
+		// FIM JOINA THREADS IMIGRANTES -------------------------------
+		
+		
+		// INICIO JOINA THREADS ESPECTADORES --------------------------
 		for (int i=0; i < NUM_ESPECTADORES; i++) {
 			if (pthread_join(espectadores[i], NULL) != 0) {
 				perror("Falha em join espectadores.");
 			}
 		}
+		// FIM JOINA THREADS ESPECTADORES -----------------------------
+		
+		
+		// JOINA THREAD JUIZ -----------------------------------------
 		if (pthread_join(juiz, NULL) != 0) {
 			perror("Falha em join juiz.");
 		}
+		// FIM JOINA THREAD JUIZ --------------------------------------
+		
+		
 	}
 
     // FIM CRIA THREADS ----------
