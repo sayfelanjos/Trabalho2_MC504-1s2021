@@ -91,7 +91,7 @@ void* rotina_espectador (void* args) {
 							argumentos->tela, argumentos->altera_tela);
 		sleep(1);
 		sem_post(argumentos->inseri_espectador);
-		sleep(5);
+		sleep(20);
 		sai_espectador(pos, argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 		remove_posicao(pos, argumentos->posicao_espectador_fila);
 		sleep(1);
@@ -122,6 +122,7 @@ void imprime(char** tela, sem_t *altera_tela){
 		}
 		printf("\n");
 	}
+	printf("Press Ctrl+C to exit\n");
 	sem_post(altera_tela);
 }
 
