@@ -69,10 +69,11 @@ void* rotina_juiz (void* args) {
 	entra_juiz(argumentos->imagem_juiz, argumentos->tela, argumentos->altera_tela);
 	for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
 		sem_post(argumentos->pega_certificado);
+		sleep(1);
+		juiz_confirma(argumentos->mensagem_confirma, argumentos->mensagem_apaga, 
+					argumentos->tela, argumentos->altera_tela);
 		sem_wait(argumentos->pegou_certificado);
 	}
-	juiz_confirma(argumentos->mensagem_confirma, argumentos->mensagem_apaga, 
-					argumentos->tela, argumentos->altera_tela);
 	sleep(1);
 	sai_juiz(argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 	sem_post(argumentos->sair_sala);

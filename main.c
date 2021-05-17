@@ -13,8 +13,6 @@ sem_t espectadores_fila; // permite a entrada de novos espectadores
 
 sem_t imigrantes_fila; // permite a entrada de novos imigrantes
 
-sem_t assentar; // permite que somente um imigrante se assente por vez para certificação.
-
 sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
 
 sem_t pega_certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
@@ -46,15 +44,13 @@ int main() {
 
 	sem_init(&inseri_imigrantes,0,1); // inicializa o semaforo com valor 1
 
-	sem_init(&sair_sala,0,0); // inicializa o semaforo com valor 1
+	sem_init(&sair_sala,0,1); // inicializa o semaforo com valor 1
 
 	sem_init(&juiz_na_sala,0,0); // sinaliza quando o juiz está na sala.
 
 	sem_init(&espectadores_fila,0,5); // limita a quantidade de espectadores dentro da sala em 5.
 
 	sem_init(&imigrantes_fila,0,5); // limita a quantidade de espectadores na fila em 5.
-
-	sem_init(&assentar,0,0); // inicializa o semaforo com valor 0
 
 	sem_init(&imigrantes_check_in,0,5); // limita a quantidade de imigrantes fazendo check_in em 5.
 
@@ -302,6 +298,7 @@ int main() {
 		num_espectadores = 0;
 		num_imigrantes_fila = 0;
 		num_imigrantes_check_in = 0;
+		sem_wait(&sair_sala);
 
 		//INICIO CRIA PARAMETROS THREADS ------------------------------
 		
