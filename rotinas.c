@@ -24,21 +24,21 @@ void* rotina_imigrante (void *args) {
 		if (*argumentos->juiz_dentro == 0) {
 			sem_post(argumentos->imigrantes);
 			(*argumentos->num_imigrantes_check_in)++;
-			sem_wait(argumentos->inseri_imigrantes_check_in);
+			sem_wait(argumentos->inseri_imigrantes_check_in); // garante que somente um imigrante seja inserido no check in por vez.
 			pos_check_in = verifica_posicao(argumentos->posicao_imigrante_check_in);
 			checkin_imigrante(pos_fila, pos_check_in ,argumentos->indice, argumentos->imagem_imigrante, 
 								argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 			remove_posicao(pos_fila, argumentos->posicao_imigrante_fila);
 			sleep(1);
 			sem_post(argumentos->inseri_imigrantes_check_in);
-			sem_post(argumentos->juiz_na_sala);
+			sem_post(argumentos->juiz_na_sala); // juiz pode entrar pois ha pelo menos um imigrante no check in.
 			sem_wait(argumentos->pega_certificado);
 			sem_post(argumentos->check_in);
 			pegar_certificado(pos_check_in, argumentos->indice,argumentos->imagem_imigrante, argumentos->vazio, 
 								argumentos->tela, argumentos->altera_tela);
 			sleep(2);
 			sem_post(argumentos->pegou_certificado);
-			sem_wait(argumentos->sair_sala); // libera a inserção de um novo imigrante na fila.
+			sem_wait(argumentos->sair_sala); // aguarda o juiz sair
 			pos_fila = verifica_posicao(argumentos->posicao_imigrante_fila);
 			sem_post(argumentos->sair_sala);
 			sai_imigrante_check_in(pos_fila, argumentos->indice, pos_check_in, argumentos->imagem_imigrante, 
@@ -63,28 +63,28 @@ void* rotina_imigrante (void *args) {
 void* rotina_juiz (void* args) {
 	args_juiz* argumentos = (args_juiz*) args;
 	sleep(5 + (rand()%5));
-	sem_wait(argumentos->juiz_na_sala);
+	sem_wait(argumentos->juiz_na_sala); // o juiz aguarda pelo menos um imigrante entrar na sala para poder entrar
 	*argumentos->juiz_dentro = 1;
 	entra_juiz(argumentos->imagem_juiz, argumentos->tela, argumentos->altera_tela);
 	for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
-		sem_post(argumentos->pega_certificado);
+		sem_post(argumentos->pega_certificado); // libera para que o imigrante pegue o certificado
 		sleep(1);
 		juiz_confirma(argumentos->mensagem_confirma, argumentos->mensagem_apaga, 
 					argumentos->tela, argumentos->altera_tela);
-		sem_wait(argumentos->pegou_certificado);
+		sem_wait(argumentos->pegou_certificado); // apos entregar o certificado, o juiz pode chamar outro imigrante
 	}
 	sleep(1);
 	sai_juiz(argumentos->vazio, argumentos->tela, argumentos->altera_tela);
-	sem_post(argumentos->sair_sala);
+	sem_post(argumentos->sair_sala); // libera para que todos os imigrantes com certificado saiam
 	return NULL;
 }
 
 void* rotina_espectador (void* args) {
-	int pos;
+	int pos; // guarda a posicao do espectador na fila
 	args_espectador* argumentos = (args_espectador*) args;
 	sem_wait(argumentos->espectadores_fila); // garante que no máximo 5 espectador entra na sala por vez.
 	if (*argumentos->juiz_dentro == 0) {
-		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador vai ser inserido por vez.
+		sem_wait(argumentos->inseri_espectador); // garante que somente 1 espectador é inserido por vez.
 		pos = verifica_posicao(argumentos->posicao_espectador_fila);
 		entra_espectador(pos, argumentos->indice,argumentos->imagem_espectador, 
 							argumentos->tela, argumentos->altera_tela);
