@@ -59,6 +59,8 @@ void* rotina_juiz (void* args);
 
 void* rotina_espectador (void* args);
 
+void wait_clear();
+
 void imprime(char** tela, sem_t *altera_tela);
 
 //funcao que toma como parametro uma imagem (imigrante/espectador/vazio) e insere na tela na posicao especificada

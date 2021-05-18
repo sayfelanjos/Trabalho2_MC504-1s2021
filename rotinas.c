@@ -247,10 +247,6 @@ void entra_espectador(int pos, int id,char** espectator, char** tela, sem_t *alt
 	imprime(tela, altera_tela);
 }
 
-void espectar(int tempo) {
-	sleep(tempo);
-}
-
 void sai_espectador(int pos, char** vazio, char** tela, sem_t *altera_tela) {
 	//posicao (10, 88) tamanho (7, 12) -> espectador 0
     insere_texto(10,85-13*pos, 7, 12, vazio, tela);

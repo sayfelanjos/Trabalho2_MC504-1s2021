@@ -318,10 +318,10 @@ int main() {
 		// INICIO IMPRIMIR IMAGENS DE INTRODUCAO ----------------------
 
 		// Esvazia a tela
-    	insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
+    		insere_texto(0, 0, LINHAS, COLUNAS, imagem1, tela);
    		// insere titulo
 		insere_texto(12, 15, 7, 73, titulo, tela);
-		//imprime titulo
+		// imprime titulo
 		imprime(tela, &altera_tela);
 		sleep(1);		
 		// Esvazia a tela
@@ -343,7 +343,7 @@ int main() {
 		// insere judge
 		insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
 		// imprime judge
-        imprime(tela, &altera_tela);
+       	 imprime(tela, &altera_tela);
 		sleep(1);
 		// Esvazio a tela
 		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
