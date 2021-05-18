@@ -66,6 +66,7 @@ void* rotina_juiz (void* args) {
 	sem_wait(argumentos->juiz_na_sala); // o juiz aguarda pelo menos um imigrante entrar na sala para poder entrar
 	*argumentos->juiz_dentro = 1;
 	entra_juiz(argumentos->imagem_juiz, argumentos->tela, argumentos->altera_tela);
+	sleep(1);
 	for (int i = 0; i < *argumentos->num_imigrantes_check_in; i++) {
 		sem_post(argumentos->pega_certificado); // libera para que o imigrante pegue o certificado
 		sleep(1);
