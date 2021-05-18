@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-sem_t sair_sala; //semaforo que indica que o juiz ja confirmou
+sem_t sair_sala; //semaforo que indica que o juiz ja saiu e libera a saida dos imigrantes
 
-sem_t juiz_na_sala; // semaforo que indica que o juiz saiu do predio
+sem_t juiz_na_sala; // semaforo que indica que o juiz esta na sala
 
-sem_t espectadores_fila; // permite a entrada de novos espectadores
+sem_t espectadores_fila;
 
-sem_t imigrantes_fila; // permite a entrada de novos imigrantes
+sem_t imigrantes_fila;
 
 sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
 
@@ -19,7 +19,7 @@ sem_t pega_certificado; // semaforos que indicam que a pessoa na cadeira i ja pe
 
 sem_t inseri_espectador; // semaforo que controla o acesso das threads de espectadores a tela
 
-sem_t altera_tela;
+sem_t altera_tela; // semaforo utilizado nas funcoes de impressao para garantir que uma thread acessa a tela por vez
 
 sem_t inseri_imigrantes; // semaforo que controla o acesso das threads de imigrantes a tela
 
@@ -36,29 +36,29 @@ int main() {
 
 	// INICIO CRIA SEMAFOROS ----------------------------------------------
 
-	sem_init(&pegou_certificado,0,0); // inicializa o semaforo com valor 0
+	sem_init(&pegou_certificado,0,0); 
 
-	sem_init(&inseri_imigrantes_check_in,0,1); // inicializa o semaforo com valor 1
+	sem_init(&inseri_imigrantes_check_in,0,1); 
 
-	sem_init(&inseri_imigrantes_fila,0,1); // inicializa o semaforo com valor 1
+	sem_init(&inseri_imigrantes_fila,0,1); 
 
-	sem_init(&inseri_imigrantes,0,1); // inicializa o semaforo com valor 1
+	sem_init(&inseri_imigrantes,0,1); 
 
-	sem_init(&sair_sala,0,1); // inicializa o semaforo com valor 1
+	sem_init(&sair_sala,0,1); 
 
-	sem_init(&juiz_na_sala,0,0); // sinaliza quando o juiz está na sala.
+	sem_init(&juiz_na_sala,0,0); 
 
-	sem_init(&espectadores_fila,0,5); // limita a quantidade de espectadores dentro da sala em 5.
+	sem_init(&espectadores_fila,0,5); 
 
-	sem_init(&imigrantes_fila,0,5); // limita a quantidade de espectadores na fila em 5.
+	sem_init(&imigrantes_fila,0,5);
 
-	sem_init(&imigrantes_check_in,0,5); // limita a quantidade de imigrantes fazendo check_in em 5.
+	sem_init(&imigrantes_check_in,0,5); 
 
-	sem_init(&inseri_espectador,0,1); // garante que somente um espectador seja inserido por vez.
+	sem_init(&inseri_espectador,0,1);
 
-	sem_init(&altera_tela,0,1); // limita a uma thread por vez a alteração da tela.
+	sem_init(&altera_tela,0,1); 
 
-	sem_init(&pega_certificado,0,0); // inicializa o semaforo com valor 0
+	sem_init(&pega_certificado,0,0); 
 
 
 	//FIM CRIA SEMAFOROS -------------------------------------------------- 	
@@ -85,10 +85,6 @@ int main() {
 
 	int juiz_dentro; // 0 se o juiz está fora e 1 caso contrário.
 
-	int num_espectadores; // número de espectadores
-
-	int num_imigrantes_fila; // número de imigrantes na fila 
-
 	int num_imigrantes_check_in; // número de imigrantes fazendo check-in
 
 	int posicao_espectador_fila[5] = {0, 0, 0, 0, 0}; // vetor que armazena a situacao de cada posicao na fila de espectadores 
@@ -114,16 +110,6 @@ int main() {
 	"  #####   #    #  ######  ######  #    #   #####   #    #  #    #  ##### "
 	};
 
-	//fim
-	/*char* fim[25] = {
-		"#######  #     #  ###### ", 
-		"#        ##    #  #     #",
-		"#        # #   #  #     #",
-		"#####    #  #  #  #     #", 
-		"#        #   # #  #     #", 
-		"#        #    ##  #     #", 
-		"#######  #     #  ###### "
-		};*/
 		
 	//imagem1
 	char* imagem1[100] = { //tela vazia
@@ -202,44 +188,6 @@ int main() {
 	"|                                                                                                  |",
 	"|__________________________________________________________________________________________________|",	
 	};
-
-	/*char* imagem3[100] = { //tela cheia
-	"__________________________________________COURT OF JUSTICE__________________________________________",
-	"|  SWEAR/GET CERTIFICATE:                      Judge                                               |",
-	"|      Immigrant ?                            @@@_@@@                                              |",
-	"|         (^^)                               @@@/ \\@@@                                             |",
-	"|        / || \\                              @@\\O O/@@                                             |",
-	"|       c  xx  c                             @@@\\-/@@@                                             |",
-	"|          ||                                @@@/ \\@@@                                             |",
-	"|          ||                                  /\\|/\\                                               |",
-	"|          LL                                                                                      |",
-	"|                                       SPECTORS:                                                  |",
-	"|                                       Spectator ? Spectator ? Spectator ? Spectator ? Spectator ?|",
-	"|                                          (00)        (00)        (00)        (00)        (00)    |",
-	"|                                         / || \\      / || \\      / || \\      / || \\      / || \\   |",
-	"|                                        c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c  |",
-	"|                                           ||          ||          ||          ||          ||     |",
-	"|                                           ||          ||          ||          ||          ||     |",
-	"|                                           LL          LL          LL          LL          LL     |",
-	"|   CHECKED IN:                                                                                    |",
-	"|Immigrant ? Immigrant ? Immigrant ? Immigrant ? Immigrant ?                                       |",
-	"|   (^^)        (^^)        (^^)        (^^)        (^^)                                           |",
-	"|  / || \\      / || \\      / || \\      / || \\      / || \\                                          |",
-	"| c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c                                         |",
-	"|    ||          ||          ||          ||          ||                                            |",
-	"|    ||          ||          ||          ||          ||                                            |",
-	"|    LL          LL          LL          LL          LL                                            |",
-	"|                                                                                                  |",
-	"|   ENTRY:                                                                                         |",
-	"|Immigrant ? Immigrant ? Immigrant ? Immigrant ? Immigrant ?                                       |",
-	"|   (^^)        (^^)        (^^)        (^^)        (^^)                                           |",
-	"|  / || \\      / || \\      / || \\      / || \\      / || \\                                          |",
-	"| c  xx  c    c  xx  c    c  xx  c    c  xx  c    c  xx  c                                         |",
-	"|    ||          ||          ||          ||          ||                                            |",
-	"|    ||          ||          ||          ||          ||                                            |",
-	"|    LL          LL          LL          LL          LL                                            |",
-	"|__________________________________________________________________________________________________|",
-	};*/             
 		
 	char* vazio[13] = { // matriz usada para apagar bonequinhos da tela 
 	"             ",
@@ -295,8 +243,6 @@ int main() {
 	
 	while(1) {
 		juiz_dentro = 0;
-		num_espectadores = 0;
-		num_imigrantes_fila = 0;
 		num_imigrantes_check_in = 0;
 		sem_wait(&sair_sala);
 
@@ -307,7 +253,6 @@ int main() {
 		for (int i=0;i<NUM_IMIGRANTES;i++) {
 			args_imigrantes[i].indice = indice_imigrantes;
 			args_imigrantes[i].num_imigrantes_check_in = &num_imigrantes_check_in;
-			args_imigrantes[i].num_imigrantes_fila = &num_imigrantes_fila;
 			args_imigrantes[i].juiz_dentro = &juiz_dentro;
 			args_imigrantes[i].imagem_imigrante = imagem_imigrante;
 			args_imigrantes[i].vazio = vazio;
@@ -333,7 +278,6 @@ int main() {
 		// INICIO CRIA PARAMETROS ESPECTADORES ------------------------
 		for (int i=0; i<NUM_ESPECTADORES; i++) {
 			args_espectadores[i].indice = indice_espectadores;
-			args_espectadores[i].num_espectadores = &num_espectadores;
 			args_espectadores[i].juiz_dentro = &juiz_dentro;
 			args_espectadores[i].imagem_espectador = imagem_espectador;
 			args_espectadores[i].vazio = vazio;
@@ -430,36 +374,44 @@ int main() {
 			}
 		}
 		// FIM CRIA THREADS ESPECTADORES ------------------------------
-	
 		
-		// INICIO JOINA THREADS IMIGRANTES ----------------------------
+		
+		// FIM CRIA THREADS
+		
+
+
+		//INICIO JOIN THREADS -----------------------------------------
+		
+
+		// INICIO JOIN THREADS IMIGRANTES -----------------------------
 		for (int i=0; i < NUM_IMIGRANTES; i++) {
 			if (pthread_join(imigrantes[i], NULL) != 0) {
 				perror("Falha em join imigrantes.");
 			}
 		}
-		// FIM JOINA THREADS IMIGRANTES -------------------------------
+		// FIM JOIN THREADS IMIGRANTES --------------------------------
 		
 		
-		// INICIO JOINA THREADS ESPECTADORES --------------------------
+		// INICIO JOIN THREADS ESPECTADORES ---------------------------
 		for (int i=0; i < NUM_ESPECTADORES; i++) {
 			if (pthread_join(espectadores[i], NULL) != 0) {
 				perror("Falha em join espectadores.");
 			}
 		}
-		// FIM JOINA THREADS ESPECTADORES -----------------------------
+		// FIM JOIN THREADS ESPECTADORES ------------------------------
 		
 		
-		// JOINA THREAD JUIZ -----------------------------------------
+		// JOIN THREAD JUIZ -------------------------------------------
 		if (pthread_join(juiz, NULL) != 0) {
 			perror("Falha em join juiz.");
 		}
-		// FIM JOINA THREAD JUIZ --------------------------------------
+		// FIM JOIN THREAD JUIZ ---------------------------------------
 		
 		
+		//FIM JOIN THREADS
 	}
 
-    // FIM CRIA THREADS ----------
+        // FIM CRIA THREADS ---------------------------------------------------
 	
 	free (tela) ;
 

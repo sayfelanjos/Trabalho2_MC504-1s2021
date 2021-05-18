@@ -44,7 +44,6 @@ void* rotina_imigrante (void *args) {
 			sai_imigrante_check_in(pos_fila, argumentos->indice, pos_check_in, argumentos->imagem_imigrante, 
 									argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 			remove_posicao(pos_check_in, argumentos->posicao_imigrante_check_in);
-			// pos_fila = verifica_posicao(argumentos->posicao_imigrante_fila);
 			entra_imigrante(pos_fila, argumentos->indice, argumentos->imagem_imigrante, 
 							argumentos->tela, argumentos->altera_tela);
 			sleep(1);
@@ -103,14 +102,11 @@ void* rotina_espectador (void* args) {
 	return NULL;
 }
 
-//função espera e limpa tela
 void wait_clear(){
-	// sleep(1);  //system("sleep 1");
 	system("clear");  // should simply write the path to current shell
 	printf("\a");
 }
 
-//função imprime tela
 void imprime(char** tela, sem_t *altera_tela){
 	// linha é o tamanho das linhas
 	// coluna é o tamanho das colunas
@@ -126,12 +122,7 @@ void imprime(char** tela, sem_t *altera_tela){
 	sem_post(altera_tela);
 }
 
-//função insere boneco na tela
 void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela){
-	// L é linha de origem
-	// C é coluna de origem
-	// linha é tamanho das linhas
-	// coluna é tamanho das colunas
 	//LEGENDA:
         //posicao (2,7) tamanho (7,13) -> espaco de certificado
         //posicao (10,40) tamanho (7,13) -> espectador 4
@@ -158,7 +149,6 @@ void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela
 	}
 }
 
-//função que atualiza indice dos bonecos
 void atualiza_indice(int L, int C, char indice, char** tela){
 	int X = 0; //posiçoes fixa da linha do "?" no boneco
 	int Y = 11; //posiçoes fixa da coluna do "?" no boneco
@@ -174,7 +164,6 @@ void atualiza_indice(int L, int C, char indice, char** tela){
 	}
 }
 
-//funçao imprime mensagem de confirmação
 void confirmed(char* mensagem, char** tela){
 	int X = 5;
 	int Y = 28;
