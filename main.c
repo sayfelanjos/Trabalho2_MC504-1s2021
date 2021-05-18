@@ -13,6 +13,8 @@ sem_t espectadores_fila;
 
 sem_t imigrantes_fila;
 
+sem_t assentar; // permite que somente um imigrante se assente por vez para certificação.
+
 sem_t imigrantes_check_in; // permite a entrada de novos imigrantes para fazer o check-in
 
 sem_t pega_certificado; // semaforos que indicam que a pessoa na cadeira i ja pegou seu certificado
@@ -44,7 +46,7 @@ int main() {
 
 	sem_init(&inseri_imigrantes,0,1); 
 
-	sem_init(&sair_sala,0,1); 
+	sem_init(&sair_sala,0,0); 
 
 	sem_init(&juiz_na_sala,0,0); 
 
@@ -148,12 +150,12 @@ int main() {
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|__________________________________________________________________________________________________|",	
-	};             
+	};       
 
 	//imagem2
 	char* imagem2[100] = { //tela somente com mensagens
 	"__________________________________________COURT OF JUSTICE__________________________________________",
-	"|  SWEAR/GET CERTIFICATE:                                                                          |",
+	"|SWEAR/GET CERTIFICATE:                                                                            |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
@@ -161,7 +163,7 @@ int main() {
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
-	"|                                       SPECTORS:                                                  |",
+	"|SPECTORS:-----------------------------------------------------------------------------------------|",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
@@ -169,7 +171,7 @@ int main() {
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
-	"|   CHECKED IN:                                                                                    |",
+	"|CHECKED IN:---------------------------------------------------------------------------------------|",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
@@ -178,7 +180,7 @@ int main() {
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
-	"|   ENTRY:                                                                                         |",
+	"|ENTRY:--------------------------------------------------------------------------------------------|",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
 	"|                                                                                                  |",
@@ -199,8 +201,8 @@ int main() {
 	"             ",
 	};
 
-	char *imagem_imigrante[13] = {	// matriz usada para inserir bonequinhos na tela
-	"Imigrante  ??",
+	char *imagem_imigrante[13] = {	
+	"Immigrant  ??",
 	"   (^^)      ",
 	"  / || \\     ",
 	" c  xx  c    ",
@@ -209,8 +211,8 @@ int main() {
 	"    LL       ",
 	};
 
-	char* imagem_espectador[13] = {  //matriz usada para inserir bonequinhos na tela
-	"Espectador ??",
+	char* imagem_espectador[13] = {  
+	"Spectator  ??",
 	"   (00)      ",
 	"  / || \\     ",
 	" c  xx  c    ",
@@ -219,8 +221,8 @@ int main() {
 	"    LL       ",
 	};
 		
-	char* imagem_juiz[13] = {  //matriz usada para inserir bonequinhos na tela
-	"   Juiz      ",
+	char* imagem_juiz[13] = {  
+	"   Judge     ",
 	"  @@@_@@@    ",
 	" @@@/ \\@@@   ",
 	" @@\\O O/@@   ",
@@ -241,10 +243,9 @@ int main() {
 	pthread_t espectadores[NUM_ESPECTADORES]; //threads para os espectadores
 	pthread_t juiz; //thread para o juiz
 	
-	while(1) {
+	while(1) {	
 		juiz_dentro = 0;
 		num_imigrantes_check_in = 0;
-		sem_wait(&sair_sala);
 
 		//INICIO CRIA PARAMETROS THREADS ------------------------------
 		
