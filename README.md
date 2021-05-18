@@ -6,3 +6,18 @@ Description of The Faneuil Hall problem:
 
 Reference: https://greenteapress.com/semaphores/LittleBookOfSemaphores.pdf
 
+### 🎲 Run
+
+```bash
+# To compile the files 
+$ make 
+
+# To execute the program
+$ ./main
+
+# To clean all files
+$ make softClean
+```
+<h4 align="left"> 
+    Finished 🚀 
+</h4>
