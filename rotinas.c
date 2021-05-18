@@ -124,23 +124,23 @@ void imprime(char** tela, sem_t *altera_tela){
 
 void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela){
 	//LEGENDA:
-        //posicao (2,7) tamanho (7,13) -> espaco de certificado
-        //posicao (10,40) tamanho (7,13) -> espectador 4
-        //posicao (10, 54) tamanho (7, 13) -> espectador 3
-        //posicao (10, 66) tamanho (7, 13) -> espectador 2
-        //posicao (10, 78) tamanho (7, 13) -> espectador 1
-        //posicao (10, 90) tamanho (7, 13) -> espectador 0
-        //posicao (18, 1) tamanho (7, 13) -> checked in 0
-        //posicao (18, 15) tamanho (7, 13) -> cheked in 1
-        //posicao (18, 27) tamanho (7, 13) -> checked in 2
-        //posicao (18, 39) tamanho (7, 13) -> checked in 3
-        //posicao (18, 51) tamanho (7, 13) -> checked in 4
-        //posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
-        //posicao (27, 15) tamanho (7, 13) -> fila imigrantes 1
-        //posicao (27, 27) tamanho (7, 13) -> fila imigrantes 2
-        //posicao (27, 39) tamanho (7, 13) -> fila imigrantes 3
-        //posicao (27, 51) tamanho (7, 13) -> fila imigrantes 4
-        //posicao (1, 45) tamanho (7, 13) -> juiz
+        //posicao (2,7) tamanho (7,12) -> espaco de certificado
+        //posicao (10,40) tamanho (7,12) -> espectador 4
+        //posicao (10, 53) tamanho (7, 12) -> espectador 3
+        //posicao (10, 66) tamanho (7, 12) -> espectador 2
+        //posicao (10, 79) tamanho (7, 12) -> espectador 1
+        //posicao (10, 92) tamanho (7, 12) -> espectador 0
+        //posicao (18, 1) tamanho (7, 12) -> checked in 0
+        //posicao (18, 14) tamanho (7, 12) -> cheked in 1
+        //posicao (18, 27) tamanho (7, 12) -> checked in 2
+        //posicao (18, 40) tamanho (7, 12) -> checked in 3
+        //posicao (18, 53) tamanho (7, 12) -> checked in 4
+        //posicao (27, 1)  tamanho (7, 12) -> fila imigrantes 0
+        //posicao (27, 14) tamanho (7, 12) -> fila imigrantes 1
+        //posicao (27, 27) tamanho (7, 12) -> fila imigrantes 2
+        //posicao (27, 40) tamanho (7, 12) -> fila imigrantes 3
+        //posicao (27, 53) tamanho (7, 12) -> fila imigrantes 4
+        //posicao (1, 45) tamanho (7, 12) -> juiz
 
 	for (int i=0;i<linha;i++) {
 		for (int j=0;j<coluna;j++) {
@@ -151,7 +151,7 @@ void insere_texto(int L, int C, int linha, int coluna, char** texto, char** tela
 
 void atualiza_indice(int L, int C, char indice, char** tela){
 	int X = 0; //posiçoes fixa da linha do "?" no boneco
-	int Y = 11; //posiçoes fixa da coluna do "?" no boneco
+	int Y = 10; //posiçoes fixa da coluna do "?" no boneco
 	if (indice<10) {
 		tela[L+X][C+Y] = '0';
 		Y++;
@@ -173,8 +173,8 @@ void confirmed(char* mensagem, char** tela){
 }
 
 void entra_juiz(char** judge,char** tela, sem_t *altera_tela) {
-	//posicao (1, 45) tamanho (7, 13) -> juiz
-	insere_texto(1,45, 7, 13, judge, tela);
+	//posicao (1, 45) tamanho (7, 12) -> juiz
+	insere_texto(1,45, 7, 12, judge, tela);
 	imprime(tela, altera_tela);
 }
 
@@ -187,62 +187,62 @@ void juiz_confirma(char* mensagem, char* apaga, char** tela, sem_t *altera_tela)
 }
 
 void sai_juiz(char** vazio, char** tela, sem_t *altera_tela) {
-	//posicao (1, 45) tamanho (7, 13) -> juiz
-	insere_texto(1,45, 7, 13, vazio, tela);
+	//posicao (1, 45) tamanho (7, 12) -> juiz
+	insere_texto(1,45, 7, 12, vazio, tela);
 	imprime(tela, altera_tela);
 }
 
 void entra_imigrante(int pos_fila,int id,char** imigrante, char** tela, sem_t *altera_tela) {
-	//posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
-	insere_texto(27,1+14*pos_fila, 7, 13, imigrante, tela);
-	atualiza_indice(27, 1+14*pos_fila, id, tela);
+	//posicao (27, 1)  tamanho (7, 12) -> fila imigrantes 0
+	insere_texto(27,1+13*pos_fila, 7, 12, imigrante, tela);
+	atualiza_indice(27, 1+13*pos_fila, id, tela);
 	imprime(tela, altera_tela);
 }
 
 void checkin_imigrante(int pos_fila, int pos_check_in,int id,char** imigrante, char** vazio, char** tela, sem_t *altera_tela) {
-	//posicao (27, 1)  tamanho (7, 13) -> fila imigrantes 0
-	//posicao (18, 1) tamanho (7, 13) -> checked in 0
-	insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
-	insere_texto(18,1+14*pos_check_in, 7, 13, imigrante, tela);
-	atualiza_indice(18, 1+14*pos_check_in, id, tela);
+	//posicao (27, 1)  tamanho (7, 12) -> fila imigrantes 0
+	//posicao (18, 1) tamanho (7, 12) -> checked in 0
+	insere_texto(27,1+13*pos_fila, 7, 12, vazio, tela);
+	insere_texto(18,1+13*pos_check_in, 7, 12, imigrante, tela);
+	atualiza_indice(18, 1+13*pos_check_in, id, tela);
 	imprime(tela, altera_tela);
 }
 
 void pegar_certificado(int pos_check_in,int id,char**imigrante,char** vazio, char** tela, sem_t *altera_tela) {
-	//posicao (2,7) tamanho (7,13) -> espaco de certificado
-	//posicao (18, 1) tamanho (7, 13) -> checked in 0
-	insere_texto(18,1+14*pos_check_in, 7, 13, vazio, tela);
-	insere_texto(2,7, 7, 13, imigrante, tela);
+	//posicao (2,7) tamanho (7,12) -> espaco de certificado
+	//posicao (18, 1) tamanho (7, 12) -> checked in 0
+	insere_texto(18,1+13*pos_check_in, 7, 12, vazio, tela);
+	insere_texto(2,7, 7, 12, imigrante, tela);
 	atualiza_indice(2, 7, id, tela);
 	imprime(tela, altera_tela);
 	sleep(2);
-	insere_texto(18,1+14*pos_check_in, 7, 13, imigrante, tela);
-	atualiza_indice(18, 1+14*pos_check_in, id, tela);
-    insere_texto(2,7, 7, 13, vazio, tela);
+	insere_texto(18,1+13*pos_check_in, 7, 12, imigrante, tela);
+	atualiza_indice(18, 1+13*pos_check_in, id, tela);
+    insere_texto(2,7, 7, 12, vazio, tela);
     imprime(tela, altera_tela);
 	
 }
 
 void sai_imigrante_check_in(int pos_fila, int id, int pos_check_in, char** imigrante, char** vazio, char** tela, sem_t *altera_tela) {
-	//posicao (18, 1) tamanho (7, 13) -> checked in 0
-	insere_texto(18,1+14*pos_check_in, 7, 13, vazio, tela);
+	//posicao (18, 1) tamanho (7, 12) -> checked in 0
+	insere_texto(18,1+13*pos_check_in, 7, 12, vazio, tela);
 	imprime(tela, altera_tela);
-	insere_texto(27,1+14*pos_fila, 7, 13, imigrante, tela);
-	atualiza_indice(27, 1+14*pos_fila, id, tela);
+	insere_texto(27,1+13*pos_fila, 7, 12, imigrante, tela);
+	atualiza_indice(27, 1+13*pos_fila, id, tela);
 	imprime(tela, altera_tela);
-	// insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
+	// insere_texto(27,1+13*pos_fila, 7, 12, vazio, tela);
 	// imprime(tela, altera_tela);
 }
 
 void sai_imigrante_fila(int pos_fila, char** vazio, char** tela, sem_t * altera_tela) {
-	insere_texto(27,1+14*pos_fila, 7, 13, vazio, tela);
+	insere_texto(27,1+13*pos_fila, 7, 12, vazio, tela);
 	imprime(tela, altera_tela);
 }
 
 void entra_espectador(int pos, int id,char** espectator, char** tela, sem_t *altera_tela) {
 	//posicao (10, 88) tamanho (7, 13) -> espectador 0
-	insere_texto(10,85-14*pos, 7, 13, espectator, tela);
-	atualiza_indice(10, 85-14*pos, id, tela);
+	insere_texto(10,85-13*pos, 7, 12, espectator, tela);
+	atualiza_indice(10, 85-13*pos, id, tela);
 	imprime(tela, altera_tela);
 }
 
@@ -251,8 +251,8 @@ void espectar(int tempo) {
 }
 
 void sai_espectador(int pos, char** vazio, char** tela, sem_t *altera_tela) {
-	//posicao (10, 88) tamanho (7, 13) -> espectador 0
-    insere_texto(10,85-14*pos, 7, 13, vazio, tela);
+	//posicao (10, 88) tamanho (7, 12) -> espectador 0
+    insere_texto(10,85-13*pos, 7, 12, vazio, tela);
     imprime(tela, altera_tela);
 }
 

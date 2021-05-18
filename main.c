@@ -191,44 +191,44 @@ int main() {
 	"|__________________________________________________________________________________________________|",	
 	};
 		
-	char* vazio[13] = { // matriz usada para apagar bonequinhos da tela 
-	"             ",
-	"             ",
-	"             ",
-	"             ",
-	"             ",
-	"             ",
-	"             ",
+	char* vazio[12] = { // matriz usada para apagar bonequinhos da tela 
+	"            ",
+	"            ",
+	"            ",
+	"            ",
+	"            ",
+	"            ",
+	"            ",
 	};
 
-	char *imagem_imigrante[13] = {	
-	"Immigrant  ??",
-	"   (^^)      ",
-	"  / || \\     ",
-	" c  xx  c    ",
-	"    ||       ",
-	"    ||       ", 		
-	"    LL       ",
+	char *imagem_imigrante[12] = {	
+	"Immigrant_??",
+	"   (^^)     ",
+	"  / || \\    ",
+	" c  xx  c   ",
+	"    ||      ",
+	"    ||      ", 		
+	"    LL      ",
 	};
 
-	char* imagem_espectador[13] = {  
-	"Spectator  ??",
-	"   (00)      ",
-	"  / || \\     ",
-	" c  xx  c    ",
-	"    ||       ",
-	"    ||       ",
-	"    LL       ",
+	char* imagem_espectador[12] = {  
+	"Spectator_??",
+	"   (00)     ",
+	"  / || \\    ",
+	" c  xx  c   ",
+	"    ||      ",
+	"    ||      ",
+	"    LL      ",
 	};
 		
-	char* imagem_juiz[13] = {  
-	"   Judge     ",
-	"  @@@_@@@    ",
-	" @@@/ \\@@@   ",
-	" @@\\O O/@@   ",
-	" @@@\\-/@@@   ",
-	" @@@/ \\@@@   ",
-	"   /\\|/\\     ",
+	char* imagem_juiz[12] = {  
+	"   Judge    ",
+	"  @@@_@@@   ",
+	" @@@/ \\@@@  ",
+	" @@\\O O/@@  ",
+	" @@@\\-/@@@  ",
+	" @@@/ \\@@@  ",
+	"   /\\|/\\    ",
 	}; 
 		
 	char mensagem[16] = "\"confirmed!\" <--"; //vetor com a mensagem de confirmado
