@@ -91,7 +91,7 @@ void* rotina_espectador (void* args) {
 							argumentos->tela, argumentos->altera_tela);
 		sleep(1);
 		sem_post(argumentos->inseri_espectador);
-		sleep(20);
+		sleep(15);
 		sai_espectador(pos, argumentos->vazio, argumentos->tela, argumentos->altera_tela);
 		remove_posicao(pos, argumentos->posicao_espectador_fila);
 		sleep(1);
