@@ -343,7 +343,7 @@ int main() {
 		// insere judge
 		insere_texto(12, 42, 7, 11, imagem_juiz, tela);        
 		// imprime judge
-       	 imprime(tela, &altera_tela);
+       	 	imprime(tela, &altera_tela);
 		sleep(1);
 		// Esvazio a tela
 		insere_texto(0, 0, LINHAS, COLUNAS, imagem2, tela);
